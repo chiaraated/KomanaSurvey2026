@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Komana / Yeşilırmak river valley Archaeological Survey</title>
+<style>
+  /* ── TOKENS ───────────────────────────────────────── */
+  :root {
+    --bg:        #f4f1eb;
+    --surface:   #ffffff;
+    --border:    #d6d0c4;
+    --accent:    #967f39;
+    --accent-lt: #f5f0e0;
+    --text:      #1a1a1a;
+    --muted:     #7a7060;
+    --danger:    #c0392b;
+    --node-bg:   #f4f2e9;
+    --node-border:#e6be21;
+    --radius:    10px;
+    --font:      'DM Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── HEADER ───────────────────────────────────────── */
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header h1 { font-size: 1.1rem; letter-spacing: .08em; text-transform: uppercase; }
+
+  /* ── TABS ─────────────────────────────────────────── */
+  #tab-bar {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 12px;
+  }
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 12px 18px;
+    font-family: var(--font);
+    font-size: .8rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color .15s, border-color .15s;
+    margin-bottom: -2px;
+  }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ── MAIN CONTENT ─────────────────────────────────── */
+  main { padding: 20px 16px; max-width: 680px; margin: auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── FORM ─────────────────────────────────────────── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .form-card h2 {
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-group {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .field-group label {
+    font-size: .75rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field-group input,
+  .field-group select,
+  .field-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: var(--font);
+    font-size: .95rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .field-group input:focus,
+  .field-group select:focus { border-color: var(--accent); }
+
+  /* checkbox row */
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .checkbox-row input[type=checkbox] {
+    width: 18px; height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* GPS field */
+  .gps-row { display: flex; gap: 8px; align-items: center; }
+  .gps-row input { flex: 1; }
+  .gps-btn {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    background: var(--accent-lt);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    font-family: var(--font);
+    font-size: .8rem;
+    color: var(--accent);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .gps-btn:active { background: var(--accent); color: #fff; }
+
+  /* buttons */
+  .btn-row { display: flex; gap: 10px; margin-top: 18px; }
+  .btn {
+    padding: 12px 20px;
+    font-family: var(--font);
+    font-size: .8rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn:active { opacity: .75; }
+  .btn-primary { background: var(--accent); color: #fff; flex: 1; }
+  .btn-export  { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
+  .btn-clear   { background: var(--bg); border: 1px solid var(--danger);  color: var(--danger); }
+
+  /* ── NODE SECTION ─────────────────────────────────── */
+  .node-section {
+    border: 1.5px solid var(--node-border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 14px;
+    background: var(--node-bg);
+  }
+  .node-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .node-header h3 {
+    font-size: .72rem;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--node-border);
+  }
+  .node-count {
+    font-size: .7rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .node-list { margin-bottom: 10px; }
+  .node-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: .82rem;
+    line-height: 1.5;
+  }
+  .node-item-text { flex: 1; color: var(--text); }
+  .node-item-text strong { color: var(--muted); font-weight: normal; }
+  .node-remove {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 2px;
+    line-height: 1;
+    flex-shrink: 0;
+    opacity: .7;
+  }
+  .node-remove:hover { opacity: 1; }
+  .node-subform {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 12px 8px;
+  }
+  .node-subform .field-group { margin-bottom: 10px; }
+  .node-subform .field-group label { color: var(--muted); }
+  .node-subform .field-group input,
+  .node-subform .field-group select {
+    background: var(--node-bg);
+    font-size: .88rem;
+    padding: 8px 10px;
+  }
+  .node-add-btn {
+    margin-top: 4px;
+    padding: 8px 16px;
+    font-family: var(--font);
+    font-size: .75rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    background: var(--node-border);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .node-add-btn:active { opacity: .75; }
+  .node-hint {
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ── ENTRIES TABLE ────────────────────────────────── */
+  .entries-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .entries-card h2 {
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .entries-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--bg);
+    color: var(--muted);
+    font-size: .7rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 12px;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+    max-width: 160px;
+    word-break: break-word;
+  }
+  tr:nth-child(even) td { background: var(--bg); }
+  .empty-msg { padding: 20px 16px; color: var(--muted); font-size: .85rem; }
+  .node-cell {
+    font-size: .75rem;
+    color: var(--node-border);
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Komana / Yeşilırmak River Valley Archaeological Survey</h1>
+  <span id="entry-count" style="font-size:.8rem;opacity:.8"></span>
+</header>
+
+<div id="tab-bar"></div>
+<main id="main"></main>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA MODELS
+// ═══════════════════════════════════════════════════════
+const MODELS = {
+
+  "Administrative Units": [
+    { name: "Creator of the entry",           type: "dropdown", options: ["Burcu Erciyas", "Maxime Durocher"] },
+    { name: "Language of the entry",           type: "dropdown", options: ["English", "Turkish"] },
+    { name: "Date of creation of the entry",   type: "datetime" },
+    { name: "ID number place",                 type: "text" },
+    { name: "Title of the entry",              type: "text" },
+    { name: "Current name of the site",        type: "text" },
+    { name: "Current administrative status",   type: "text" },
+    { name: "District (ilce)",                 type: "text" },
+    { name: "City (il)",                       type: "text" },
+    { name: "Latitude/Longitude",              type: "gps" },
+    { name: "Average elevation",               type: "number" },
+    { name: "Topography",                      type: "dropdown", options: ["to be defined"] },
+    // ── POPULATION NODE ───────────────────────────────
+    { name: "Population Records", type: "node",
+      hint: "Add one record per data source or census year.",
+      nodeFields: [
+        { name: "Count",       type: "number" },
+        { name: "Year",        type: "year" },
+        { name: "Source (URL)", type: "url" },
+      ]
+    },
+    // ─────────────────────────────────────────────────
+    { name: "Economy",                  type: "dropdown", options: ["to be defined"] },
+    { name: "Religion",                 type: "dropdown", options: ["to be defined"] },
+    { name: "Comments (modern time)",   type: "text" },
+    { name: "Known Historical Coverage",type: "dropdown", options: ["to be defined"] },
+    { name: "Old Name(s) of the Place", type: "dropdown", options: ["Reference to Gazetteer to be built"] },
+    { name: "TD2",  type: "checkbox" },
+    { name: "TD19", type: "checkbox" },
+    { name: "TD79", type: "checkbox" },
+    { name: "Related Archaeological Sites", type: "text" },
+    { name: "Comment",      type: "text" },
+    { name: "Bibliography", type: "text" },
+  ],
+
+  "Sites": [
+    { name: "Creator of the entry",          type: "dropdown", options: ["Burcu Erciyas", "Maxime Durocher"] },
+    { name: "Language of the entry",          type: "dropdown", options: ["English", "Turkish"] },
+    { name: "Date of creation of the entry",  type: "datetime" },
+    { name: "ID number of Site",              type: "text" },
+    { name: "Name of the site",               type: "text" },
+    { name: "Latitude /Longitude",            type: "gps" },
+    { name: "Related AU",                     type: "text" },
+    { name: "Date of the Survey (Year)",      type: "year" },
+    { name: "Survey Methodology",             type: "dropdown", options: ["intensive", "extensive"] },
+    { name: "Type of Site",                   type: "dropdown", options: ["to be defined"] },
+    { name: "Description",                    type: "text" },
+    // ── FINDS NODE ────────────────────────────────────
+    { name: "Finds", type: "node",
+      hint: "Add one entry per find.",
+      nodeFields: [
+        { name: "Category", type: "dropdown",
+          options: ["Ceramics", "Building Material", "Architectural Feature", "Epigraphic Material", "Other"],
+          triggers: "Type / Subtype"
+        },
+        { name: "Type / Subtype", type: "dependent-dropdown", dependsOn: "Category",
+          optionsByValue: {
+            "Ceramics": [
+              "Glazed ware", "Unglazed / Coarse ware", "Fine ware",
+              "Amphora", "Pithos / Storage jar", "Cooking ware",
+              "Table ware", "Tile / Architectural ceramic"
+            ],
+            "Building Material": [
+              "Water pipe (ceramic)", "Roof tile", "Brick",
+              "Cut stone (ashlar)", "Rubble / Fieldstone",
+              "Mortar / Plaster", "Marble", "Terracotta"
+            ],
+            "Architectural Feature": [
+              "Column / Capital", "Wall (standing)", "Pavement / Floor",
+              "Arch / Vault", "Doorway / Threshold", "Window / Niche",
+              "Mosaic", "Fresco / Wall painting", "Foundation"
+            ],
+            "Epigraphic Material": [
+              "Funerary inscription", "Building inscription",
+              "Votive inscription", "Honorary inscription",
+              "Boundary marker", "Graffiti", "Fragment (unidentified)"
+            ],
+            "Other": [
+              "Coin", "Metal object (iron)", "Metal object (bronze)",
+              "Glass", "Bone / Faunal remains", "Organic material",
+              "Sculpture / Figurine", "Stamp / Seal"
+            ]
+          }
+        },
+        { name: "ID Number", type: "text" },
+        { name: "Notes",     type: "text" },
+      ]
+    },
+    // ─────────────────────────────────────────────────
+    { name: "Historical Coverage", type: "dropdown", options: ["to be defined"] },
+    { name: "Comments",            type: "text" },
+    { name: "Archival documents",  type: "text" },
+    { name: "Bibliography",        type: "text" },
+  ],
+
+  "Architecture": [
+    { name: "Creator of the entry",           type: "dropdown", options: ["Burcu Erciyas", "Maxime Durocher"] },
+    { name: "Language of the entry",           type: "dropdown", options: ["English", "Turkish"] },
+    { name: "Date of creation of the entry",   type: "datetime" },
+    { name: "ID number of Architecture",       type: "text" },
+    { name: "Title of the Entry",              type: "text" },
+    { name: "Survey Site",                     type: "text" },
+    { name: "Survey Site ID number",           type: "text" },
+    { name: "Date of the Survey (Year)",        type: "year" },
+    { name: "Survey Place (Latitude/Longitude)", type: "gps" },
+    { name: "Identified Building",             type: "checkbox" },
+    { name: "Site of Preservation",            type: "text" },
+    { name: "Restoration",                     type: "checkbox" },
+    { name: "Building type", type: "dropdown", options: [
+        "House (urban domus, insula)", "Villa (rural elite residence)", "Farmstead / Agricultural complex",
+        "Seasonal hut / Tent structure", "Basilica (administrative / commercial)", "Bath complex / Thermae",
+        "Theatre / Odeon / Amphitheatre", "Stoa / Portico", "Temple", "Sanctuary / Sacred precinct",
+        "Church / Basilica (Christian)", "Monastery complex", "Fortress / Citadel", "Barrack / Garrison building",
+        "Watchtower / Signal station", "Workshop (ceramics, metal)", "Mill / Olive press building",
+        "Market hall / Macellum", "Tomb house / Mausoleum", "Rock-cut tomb / Catacomb",
+        "Tumulus / Burial mound structure", "Library / Archive building", "Educational building (Gymnasium, Palaestra)"
+    ]},
+    { name: "Name of the structure",                    type: "text" },
+    { name: "Building materials",                        type: "text" },
+    { name: "Size",                                      type: "text" },
+    { name: "Description",                               type: "text" },
+    { name: "Estimated construction date",               type: "datetime" },
+    { name: "Related epigraphic material ID number",     type: "text" },
+    { name: "Comments",                                  type: "text" },
+    { name: "Bibliography",                              type: "text" },
+  ],
+
+  "Inscriptions": [
+    { name: "Creator of the entry",           type: "dropdown", options: ["Burcu Erciyas", "Maxime Durocher"] },
+    { name: "Language of the entry",           type: "dropdown", options: ["English", "Turkish"] },
+    { name: "Date of creation of the entry",   type: "datetime" },
+    { name: "ID number of Inscription",        type: "text" },
+    { name: "Title of the Entry",              type: "text" },
+    { name: "Survey Site",                     type: "text" },
+    { name: "Survey Site ID number",           type: "text" },
+    { name: "Date of the Survey (Year)",        type: "year" },
+    { name: "Survey Place (Latitude/Longitude)", type: "gps" },
+    { name: "Present location",                type: "text" },
+    { name: "Language of the inscription", type: "dropdown", options: [
+        "Turkish", "Greek (Ancient, Koine, Byzantine)", "Latin", "Phrygian", "Armenian (Classical)",
+        "Thracian / Dacian (fragmentary)", "Phoenician / Punic", "Aramaic", "Hebrew (Ancient / Biblical)",
+        "Arabic (Early Islamic, Kufic)", "Hittite", "Luwian / Hieroglyphic Luwian",
+        "Lycian / Carian / Pisidian", "Urartian", "Georgian (Old Asomtavruli)", "Old Persian (Cuneiform)",
+        "Elamite", "Sumerian", "Etruscan"
+    ]},
+    { name: "Type of the inscription",   type: "dropdown", options: ["Funerary inscription", "Foundation inscription"] },
+    { name: "Nature of the Text",         type: "dropdown", options: ["to be defined"] },
+    { name: "Text content",               type: "text" },
+    { name: "Writing Surface", type: "dropdown", options: [
+        "marble", "limestone", "basalt / andesite", "sandstone", "stone",
+        "bronze", "lead", "gold / silver", "clay", "ceramics", "terracotta",
+        "wood / wax", "papyrus / parchment", "composite"
+    ]},
+    { name: "Shape", type: "dropdown", options: [
+        "Rectangular / Square", "Circular / Disk-shaped", "Oval / Elliptical", "Triangular",
+        "Polygonal / Multisided", "Globular (amphora, pithos)", "Conical (cups / small jars)",
+        "Biconical", "Carinated (sharp-angled body)", "Columnar / Pillar-like",
+        "Slab-like (flat plates, plaques)", "Domed / Vaulted", "Zoomorphic (animal-shaped)",
+        "Anthropomorphic (human-shaped)", "Symbolic (cross, star, rosette)"
+    ]},
+    { name: "Size",                                        type: "text" },
+    { name: "Layout (e.g. how many lines per surface)",    type: "number" },
+    { name: "Carving Techniques", type: "dropdown", options: [
+        "Relief carving (bas-relief, high-relief)", "Incised carving (linear engravings)",
+        "Point chiseling / Pick dressing", "Polished finishing / Surface smoothing",
+        "Rock-cut carving (architectural or inscriptions)", "Whittling / Linear carving",
+        "Chip carving (geometric patterns)", "Engraving (fine incised lines)",
+        "Punch-dot or Stipple engraving", "Scrimshaw-like fine carving",
+        "Openwork / Pierced carving", "Incised decoration (pre-firing)",
+        "Stamp-impressed decoration", "Barbotine / Applied relief decoration",
+        "Inlayed carving (stone or metal inlays)"
+    ]},
+    { name: "Comments",     type: "text" },
+    { name: "Published",    type: "checkbox" },
+    { name: "Corpus Link",  type: "text" },
+    { name: "Bibliography", type: "text" },
+  ],
+};
+
+
+// ═══════════════════════════════════════════════════════
+//  NODE STATE  — tracks pending node items per form
+// ═══════════════════════════════════════════════════════
+const pendingNodes = {};
+
+function nodeKey(modelName, fieldName) { return `${modelName}::${fieldName}`; }
+function getNodeItems(m, f) { return pendingNodes[nodeKey(m, f)] || []; }
+function setNodeItems(m, f, v) { pendingNodes[nodeKey(m, f)] = v; }
+
+
+// ═══════════════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════════════
+const storageKey = name => `fieldform_${name}`;
+
+function loadEntries(modelName) {
+  try { return JSON.parse(localStorage.getItem(storageKey(modelName))) || []; }
+  catch { return []; }
+}
+function saveEntries(modelName, entries) {
+  localStorage.setItem(storageKey(modelName), JSON.stringify(entries));
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  BUILD UI
+// ═══════════════════════════════════════════════════════
+const tabBar = document.getElementById('tab-bar');
+const mainEl = document.getElementById('main');
+const models = Object.keys(MODELS);
+let activeTab = models[0];
+
+models.forEach(name => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (name === activeTab ? ' active' : '');
+  btn.textContent = name;
+  btn.onclick = () => switchTab(name);
+  tabBar.appendChild(btn);
+
+  const panel = document.createElement('div');
+  panel.className = 'tab-panel' + (name === activeTab ? ' active' : '');
+  panel.id = `panel-${name}`;
+  panel.innerHTML = buildPanel(name);
+  mainEl.appendChild(panel);
+
+  // wire GPS buttons
+  MODELS[name].forEach((field, i) => {
+    if (field.type === 'gps') {
+      document.getElementById(`gps-btn-${name}-${i}`)
+        ?.addEventListener('click', () => getGPS(name, i));
+    }
+  });
+
+  renderTable(name);
+});
+
+updateCount();
+
+function switchTab(name) {
+  activeTab = name;
+  document.querySelectorAll('.tab-btn').forEach((b, i) =>
+    b.classList.toggle('active', models[i] === name));
+  document.querySelectorAll('.tab-panel').forEach(p =>
+    p.classList.toggle('active', p.id === `panel-${name}`));
+  updateCount();
+}
+
+
+// ── BUILD PANEL ───────────────────────────────────────
+function buildPanel(name) {
+  const fieldsHtml = MODELS[name].map((f, i) => buildField(f, name, i)).join('');
+  return `
+    <div class="form-card">
+      <h2>New entry — ${name}</h2>
+      <div id="fields-${name}">${fieldsHtml}</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="submitEntry('${name}')">＋ Add entry</button>
+        <button class="btn btn-export"  onclick="exportCSV('${name}')">↓ CSV</button>
+        <button class="btn btn-clear"   onclick="clearEntries('${name}')">✕</button>
+      </div>
+    </div>
+    <div class="entries-card">
+      <h2>Entries</h2>
+      <div class="entries-wrap"><div id="table-${name}"></div></div>
+    </div>`;
+}
+
+
+// ── FIELD BUILDER ─────────────────────────────────────
+function buildField(field, modelName, i) {
+  const id = `field-${modelName}-${i}`;
+  const label = `<label for="${id}">${field.name}</label>`;
+
+  switch (field.type) {
+    case 'text':
+      return `<div class="field-group">${label}<input id="${id}" type="text" placeholder="${field.name}"></div>`;
+    case 'number':
+      return `<div class="field-group">${label}<input id="${id}" type="number" placeholder="0"></div>`;
+    case 'datetime':
+      return `<div class="field-group">${label}<input id="${id}" type="datetime-local"></div>`;
+    case 'year':
+      return `<div class="field-group">${label}<input id="${id}" type="number" min="1000" max="2100" placeholder="YYYY"></div>`;
+    case 'url':
+      return `<div class="field-group">${label}<input id="${id}" type="url" placeholder="https://"></div>`;
+    case 'dropdown': {
+      const opts = field.options.map(o => `<option value="${o}">${o}</option>`).join('');
+      return `<div class="field-group">${label}<select id="${id}"><option value="">— select —</option>${opts}</select></div>`;
+    }
+    case 'checkbox':
+      return `<div class="field-group"><label>${field.name}</label>
+        <label class="checkbox-row"><input id="${id}" type="checkbox"> ${field.name}</label></div>`;
+    case 'gps':
+      return `<div class="field-group">${label}
+        <div class="gps-row">
+          <input id="${id}-lat" type="text" placeholder="Latitude"  readonly>
+          <input id="${id}-lon" type="text" placeholder="Longitude" readonly>
+          <button class="gps-btn" id="gps-btn-${modelName}-${i}">📍 Get</button>
+        </div></div>`;
+    case 'node':
+      return buildNodeField(field, modelName, i);
+    default:
+      return `<div class="field-group">${label}<input id="${id}" type="text"></div>`;
+  }
+}
+
+
+// ── NODE FIELD BUILDER ────────────────────────────────
+function buildNodeField(field, modelName, fieldIndex) {
+  setNodeItems(modelName, field.name, []);
+
+  const subHtml = field.nodeFields.map((sf, si) =>
+    buildSubField(sf, modelName, fieldIndex, si)
+  ).join('');
+
+  const hint = field.hint
+    ? `<p class="node-hint">${field.hint}</p>`
+    : '';
+
+  return `
+    <div class="node-section">
+      <div class="node-header">
+        <h3>${field.name}</h3>
+        <span class="node-count" id="node-count-${modelName}-${fieldIndex}">none added</span>
+      </div>
+      <div class="node-list" id="node-list-${modelName}-${fieldIndex}"></div>
+      <div class="node-subform">
+        ${subHtml}
+        <button class="node-add-btn" onclick="addNodeItem('${modelName}', ${fieldIndex})">＋ Add</button>
+      </div>
+      ${hint}
+    </div>`;
+}
+
+function buildSubField(sf, modelName, fieldIndex, si) {
+  const id  = `node-field-${modelName}-${fieldIndex}-${si}`;
+  const lbl = `<label for="${id}">${sf.name}</label>`;
+
+  if (sf.type === 'dropdown') {
+    const onChange = sf.triggers
+      ? ` onchange="onNodeFieldChange('${modelName}', ${fieldIndex}, ${si}, this.value)"`
+      : '';
+    const opts = sf.options.map(o => `<option value="${o}">${o}</option>`).join('');
+    return `<div class="field-group">${lbl}<select id="${id}"${onChange}><option value="">— select —</option>${opts}</select></div>`;
+  }
+  if (sf.type === 'dependent-dropdown') {
+    return `<div class="field-group">${lbl}
+      <select id="${id}" disabled style="opacity:.5">
+        <option value="">— select a category first —</option>
+      </select></div>`;
+  }
+  if (sf.type === 'number') return `<div class="field-group">${lbl}<input id="${id}" type="number" placeholder="0"></div>`;
+  if (sf.type === 'year')   return `<div class="field-group">${lbl}<input id="${id}" type="number" min="1000" max="2100" placeholder="YYYY"></div>`;
+  if (sf.type === 'url')    return `<div class="field-group">${lbl}<input id="${id}" type="url" placeholder="https://"></div>`;
+  return `<div class="field-group">${lbl}<input id="${id}" type="text" placeholder="${sf.name}"></div>`;
+}
+
+// ── CASCADING DROPDOWN HANDLER ────────────────────────
+function onNodeFieldChange(modelName, fieldIndex, triggerSubIndex, value) {
+  const field = MODELS[modelName][fieldIndex];
+  const triggerField = field.nodeFields[triggerSubIndex];
+
+  field.nodeFields.forEach((sf, si) => {
+    if (sf.type === 'dependent-dropdown' && sf.dependsOn === triggerField.name) {
+      const el = document.getElementById(`node-field-${modelName}-${fieldIndex}-${si}`);
+      if (!el) return;
+      const opts = (sf.optionsByValue[value] || []);
+      el.innerHTML = opts.length
+        ? `<option value="">— select —</option>` + opts.map(o => `<option value="${o}">${o}</option>`).join('')
+        : `<option value="">— select a category first —</option>`;
+      el.disabled = !opts.length;
+      el.style.opacity = opts.length ? '1' : '.5';
+    }
+  });
+}
+
+
+// ── ADD / REMOVE NODE ITEMS ───────────────────────────
+function addNodeItem(modelName, fieldIndex) {
+  const field = MODELS[modelName][fieldIndex];
+  if (!field || field.type !== 'node') return;
+
+  const item = {};
+  field.nodeFields.forEach((sf, si) => {
+    const el = document.getElementById(`node-field-${modelName}-${fieldIndex}-${si}`);
+    item[sf.name] = el ? el.value.trim() : '';
+    if (el) el.value = '';
+  });
+
+  if (Object.values(item).every(v => !v)) return; // nothing filled
+
+  const items = getNodeItems(modelName, field.name);
+  items.push(item);
+  setNodeItems(modelName, field.name, items);
+  renderNodeList(modelName, fieldIndex, field);
+}
+
+function removeNodeItem(modelName, fieldIndex, idx) {
+  const field = MODELS[modelName][fieldIndex];
+  const items = getNodeItems(modelName, field.name);
+  items.splice(idx, 1);
+  setNodeItems(modelName, field.name, items);
+  renderNodeList(modelName, fieldIndex, field);
+}
+
+function renderNodeList(modelName, fieldIndex, field) {
+  const items   = getNodeItems(modelName, field.name);
+  const listEl  = document.getElementById(`node-list-${modelName}-${fieldIndex}`);
+  const countEl = document.getElementById(`node-count-${modelName}-${fieldIndex}`);
+
+  if (countEl) countEl.textContent = items.length ? `${items.length} added` : 'none added';
+  if (!listEl) return;
+
+  listEl.innerHTML = items.map((item, idx) => {
+    const summary = Object.entries(item)
+      .filter(([, v]) => v)
+      .map(([k, v]) => `<strong>${k}:</strong> ${v}`)
+      .join('  ·  ');
+    return `<div class="node-item">
+      <span class="node-item-text">${summary || '(empty)'}</span>
+      <button class="node-remove" title="Remove" onclick="removeNodeItem('${modelName}', ${fieldIndex}, ${idx})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+
+// ── GPS ───────────────────────────────────────────────
+function getGPS(modelName, fieldIndex) {
+  const id  = `field-${modelName}-${fieldIndex}`;
+  const btn = document.getElementById(`gps-btn-${modelName}-${fieldIndex}`);
+  btn.textContent = '…';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      document.getElementById(`${id}-lat`).value = pos.coords.latitude.toFixed(6);
+      document.getElementById(`${id}-lon`).value = pos.coords.longitude.toFixed(6);
+      btn.textContent = '✓';
+    },
+    err => { alert('GPS error: ' + err.message); btn.textContent = '📍 Get'; },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+
+// ── SUBMIT ────────────────────────────────────────────
+function submitEntry(modelName) {
+  const fields = MODELS[modelName];
+  const entry  = { _timestamp: new Date().toISOString() };
+
+  fields.forEach((field, i) => {
+    const id = `field-${modelName}-${i}`;
+    if (field.type === 'node') {
+      entry[field.name] = getNodeItems(modelName, field.name);
+    } else if (field.type === 'checkbox') {
+      entry[field.name] = document.getElementById(id).checked ? 'yes' : 'no';
+    } else if (field.type === 'gps') {
+      const lat = document.getElementById(`${id}-lat`).value;
+      const lon = document.getElementById(`${id}-lon`).value;
+      entry[field.name] = lat && lon ? `${lat},${lon}` : '';
+    } else {
+      entry[field.name] = document.getElementById(id).value.trim();
+    }
+  });
+
+  const entries = loadEntries(modelName);
+  entries.push(entry);
+  saveEntries(modelName, entries);
+  resetForm(modelName);
+  renderTable(modelName);
+  updateCount();
+}
+
+
+// ── RESET ─────────────────────────────────────────────
+function resetForm(modelName) {
+  MODELS[modelName].forEach((field, i) => {
+    const id = `field-${modelName}-${i}`;
+    if (field.type === 'node') {
+      setNodeItems(modelName, field.name, []);
+      renderNodeList(modelName, i, field);
+      field.nodeFields.forEach((sf, si) => {
+        const el = document.getElementById(`node-field-${modelName}-${i}-${si}`);
+        if (!el) return;
+        if (sf.type === 'dependent-dropdown') {
+          el.innerHTML = '<option value="">— select a category first —</option>';
+          el.disabled = true;
+          el.style.opacity = '.5';
+        } else {
+          el.value = '';
+        }
+      });
+    } else if (field.type === 'checkbox') {
+      document.getElementById(id).checked = false;
+    } else if (field.type === 'gps') {
+      document.getElementById(`${id}-lat`).value = '';
+      document.getElementById(`${id}-lon`).value = '';
+      const btn = document.getElementById(`gps-btn-${modelName}-${i}`);
+      if (btn) btn.textContent = '📍 Get';
+    } else {
+      document.getElementById(id).value = '';
+    }
+  });
+}
+
+
+// ── RENDER TABLE ──────────────────────────────────────
+function renderTable(modelName) {
+  const entries   = loadEntries(modelName);
+  const container = document.getElementById(`table-${modelName}`);
+  if (!container) return;
+
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="empty-msg">No entries yet.</div>';
+    return;
+  }
+
+  const headers  = ['_timestamp', ...MODELS[modelName].map(f => f.name)];
+  const nodeFields = new Set(MODELS[modelName].filter(f => f.type === 'node').map(f => f.name));
+  const headerRow = headers.map(h => `<th>${h}</th>`).join('');
+
+  const rows = entries.map(e =>
+    `<tr>${headers.map(h => {
+      const v = e[h];
+      if (nodeFields.has(h)) {
+        const n = Array.isArray(v) ? v.length : 0;
+        return `<td class="node-cell">${n ? `◈ ${n} item${n > 1 ? 's' : ''}` : '—'}</td>`;
+      }
+      return `<td>${v ?? ''}</td>`;
+    }).join('')}</tr>`
+  ).join('');
+
+  container.innerHTML = `<table><thead><tr>${headerRow}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+
+// ── EXPORT CSV ────────────────────────────────────────
+function exportCSV(modelName) {
+  const entries = loadEntries(modelName);
+  if (entries.length === 0) { alert('No entries to export.'); return; }
+
+  const headers  = ['_timestamp', ...MODELS[modelName].map(f => f.name)];
+  const escape   = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const cellVal  = (h, e) => {
+    const v = e[h];
+    return Array.isArray(v) ? escape(JSON.stringify(v)) : escape(v);
+  };
+  const lines = [
+    headers.map(escape).join(','),
+    ...entries.map(e => headers.map(h => cellVal(h, e)).join(','))
+  ];
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `${modelName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+
+// ── CLEAR ─────────────────────────────────────────────
+function clearEntries(modelName) {
+  if (!confirm(`Delete ALL entries for "${modelName}"? This cannot be undone.`)) return;
+  localStorage.removeItem(storageKey(modelName));
+  renderTable(modelName);
+  updateCount();
+}
+
+
+// ── HEADER COUNT ──────────────────────────────────────
+function updateCount() {
+  const entries = loadEntries(activeTab);
+  document.getElementById('entry-count').textContent =
+    entries.length ? `${entries.length} entr${entries.length > 1 ? 'ies' : 'y'}` : '';
+}
+</script>
+</body>
+</html>
