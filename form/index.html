@@ -434,6 +434,7 @@ const MODELS = {
         { name: "ID Number",   type: "text" },
         { name: "Dimensions",  type: "text" },
         { name: "Notes",       type: "text" },
+        { name: "Photo",       type: "photo" },
       ]
     },
     // ─────────────────────────────────────────────────
@@ -460,6 +461,7 @@ const MODELS = {
               { name: "Materials", type: "text" },
               { name: "Epigraphy?", type: "checkbox" },
               { name: "Observations", type: "text" },
+              { name: "Photo", type: "photo" },
             ],
             "Epigraphic Material": [
               { name: "Type", type: "dropdown", options: [
@@ -499,6 +501,7 @@ const MODELS = {
                   "Inlayed carving (stone or metal inlays)"
               ]},
               { name: "Observations", type: "text" },
+              { name: "Photo", type: "photo" },
             ],
           }
         },
@@ -535,10 +538,16 @@ function onPhotoSelected(modelName, fieldIndex, inputEl) {
   const file = inputEl.files && inputEl.files[0];
   if (!file) return;
  
-  pendingPhotos[photoKey(modelName, fieldIndex)] = file.name;
+  // iOS Safari often hands back a generic name like "image.jpg" for camera
+  // captures, so we build our own descriptive name instead of trusting file.name.
+  const ext = (file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const generatedName = `${slugify(modelName)}_${stamp}.${ext}`;
+ 
+  pendingPhotos[photoKey(modelName, fieldIndex)] = generatedName;
  
   const filenameEl = document.getElementById(`photo-filename-${slugify(modelName)}-${fieldIndex}`);
-  if (filenameEl) filenameEl.textContent = file.name;
+  if (filenameEl) filenameEl.textContent = generatedName;
  
   const previewEl = document.getElementById(`photo-preview-${slugify(modelName)}-${fieldIndex}`);
   if (previewEl) {
@@ -553,10 +562,105 @@ function onPhotoSelected(modelName, fieldIndex, inputEl) {
   const btn = document.getElementById(`photo-btn-${slugify(modelName)}-${fieldIndex}`);
   if (btn) btn.textContent = '📷 Retake photo';
  
-  // trigger a download of the photo so it's saved alongside the CSV export
+  // trigger a download of the photo, renamed, so it's saved alongside the CSV export
   const a = document.createElement('a');
   a.href = URL.createObjectURL(file);
-  a.download = file.name;
+  a.download = generatedName;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+ 
+ 
+// ── PHOTO HANDLER FOR NODE SUB-FORMS (Finds, Architecture & Epigraphy items) ──
+// Each node row gets its own filename slot, keyed by modelName + fieldIndex + nodeFieldIndex.
+function nodePhotoKey(modelName, fieldIndex, si) { return `${modelName}::${fieldIndex}::${si}`; }
+const pendingNodePhotos = {};
+ 
+function onNodePhotoSelected(modelName, fieldIndex, si, inputEl) {
+  const file = inputEl.files && inputEl.files[0];
+  if (!file) return;
+ 
+  const ext = (file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const field = MODELS[modelName][fieldIndex];
+  const generatedName = `${slugify(modelName)}_${slugify(field.name)}_${stamp}.${ext}`;
+ 
+  pendingNodePhotos[nodePhotoKey(modelName, fieldIndex, si)] = generatedName;
+ 
+  const id = `node-field-${slugify(modelName)}-${fieldIndex}-${si}`;
+  const filenameEl = document.getElementById(`${id}-filename`);
+  if (filenameEl) filenameEl.textContent = generatedName;
+ 
+  const previewEl = document.getElementById(`${id}-preview`);
+  if (previewEl) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewEl.src = e.target.result;
+      previewEl.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+ 
+  const btn = document.getElementById(`${id}-btn`);
+  if (btn) btn.textContent = '📷 Retake photo';
+ 
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(file);
+  a.download = generatedName;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+ 
+function resetNodePhoto(modelName, fieldIndex, si) {
+  delete pendingNodePhotos[nodePhotoKey(modelName, fieldIndex, si)];
+  const id = `node-field-${slugify(modelName)}-${fieldIndex}-${si}`;
+  const fileInput = document.getElementById(id);
+  if (fileInput) fileInput.value = '';
+  const filenameEl = document.getElementById(`${id}-filename`);
+  if (filenameEl) filenameEl.textContent = '';
+  const previewEl = document.getElementById(`${id}-preview`);
+  if (previewEl) { previewEl.style.display = 'none'; previewEl.src = ''; }
+  const btn = document.getElementById(`${id}-btn`);
+  if (btn) btn.textContent = '📷 Take a photo';
+}
+ 
+ 
+// ── PHOTO HANDLER FOR BRANCH SUB-FIELDS (Architecture & Epigraphy details) ──
+const pendingBranchPhotos = {};
+function branchPhotoKey(modelName, fieldIndex, branchValue, bi) {
+  return `${modelName}::${fieldIndex}::${branchValue}::${bi}`;
+}
+ 
+function onBranchPhotoSelected(modelName, fieldIndex, branchValue, bi, inputEl) {
+  const file = inputEl.files && inputEl.files[0];
+  if (!file) return;
+ 
+  const ext = (file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const generatedName = `${slugify(modelName)}_${slugify(branchValue)}_${stamp}.${ext}`;
+ 
+  pendingBranchPhotos[branchPhotoKey(modelName, fieldIndex, branchValue, bi)] = generatedName;
+ 
+  const id = `node-branch-field-${slugify(modelName)}-${fieldIndex}-${slugify(branchValue)}-${bi}`;
+  const filenameEl = document.getElementById(`${id}-filename`);
+  if (filenameEl) filenameEl.textContent = generatedName;
+ 
+  const previewEl = document.getElementById(`${id}-preview`);
+  if (previewEl) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewEl.src = e.target.result;
+      previewEl.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+ 
+  const btn = document.getElementById(`${id}-btn`);
+  if (btn) btn.textContent = '📷 Retake photo';
+ 
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(file);
+  a.download = generatedName;
   a.click();
   URL.revokeObjectURL(a.href);
 }
@@ -753,6 +857,18 @@ function buildSubField(sf, modelName, fieldIndex, si) {
     return `<div class="field-group"><label>${sf.name}</label>
       <label class="checkbox-row"><input id="${id}" type="checkbox"> ${sf.name}</label></div>`;
   }
+  if (sf.type === 'photo') {
+    return `<div class="field-group">${lbl}
+      <div class="photo-row">
+        <input id="${id}" type="file" accept="image/*" capture="environment" style="display:none"
+          onchange="onNodePhotoSelected('${modelName}', ${fieldIndex}, ${si}, this)">
+        <button type="button" class="photo-btn" id="${id}-btn"
+          onclick="document.getElementById('${id}').click()">📷 Take a photo</button>
+        <span class="photo-filename" id="${id}-filename"></span>
+      </div>
+      <img class="photo-preview" id="${id}-preview" style="display:none">
+    </div>`;
+  }
   return `<div class="field-group">${lbl}<input id="${id}" type="text" placeholder="${sf.name}"></div>`;
 }
  
@@ -781,6 +897,18 @@ function buildBranchSubField(bf, modelName, fieldIndex, si, branchValue, bi) {
   if (bf.type === 'checkbox') {
     return `<div class="field-group"><label>${bf.name}</label>
       <label class="checkbox-row"><input id="${id}" type="checkbox"> ${bf.name}</label></div>`;
+  }
+  if (bf.type === 'photo') {
+    return `<div class="field-group">${lbl}
+      <div class="photo-row">
+        <input id="${id}" type="file" accept="image/*" capture="environment" style="display:none"
+          onchange="onBranchPhotoSelected('${modelName}', ${fieldIndex}, '${branchValue}', ${bi}, this)">
+        <button type="button" class="photo-btn" id="${id}-btn"
+          onclick="document.getElementById('${id}').click()">📷 Take a photo</button>
+        <span class="photo-filename" id="${id}-filename"></span>
+      </div>
+      <img class="photo-preview" id="${id}-preview" style="display:none">
+    </div>`;
   }
   if (bf.type === 'number') return `<div class="field-group">${lbl}<input id="${id}" type="number" placeholder="0"></div>`;
   return `<div class="field-group">${lbl}<input id="${id}" type="text" placeholder="${bf.name}"></div>`;
@@ -821,7 +949,6 @@ function addNodeItem(modelName, fieldIndex) {
   if (!field || field.type !== 'node') return;
  
   const item = {};
-  let activeBranchValue = null;
  
   field.nodeFields.forEach((sf, si) => {
     if (sf.type === 'branch') {
@@ -833,20 +960,40 @@ function addNodeItem(modelName, fieldIndex) {
         const isVisible = blockEl && blockEl.style.display !== 'none';
         branchFields.forEach((bf, bi) => {
           const id = `node-branch-field-${slugify(modelName)}-${fieldIndex}-${si}-${slugify(branchValue)}-${bi}`;
+          if (bf.type === 'photo') {
+            const key = branchPhotoKey(modelName, fieldIndex, branchValue, bi);
+            if (isVisible) {
+              item[bf.name] = pendingBranchPhotos[key] || '';
+            }
+            delete pendingBranchPhotos[key];
+            const fileInput = document.getElementById(id);
+            if (fileInput) fileInput.value = '';
+            const filenameEl = document.getElementById(`${id}-filename`);
+            if (filenameEl) filenameEl.textContent = '';
+            const previewEl = document.getElementById(`${id}-preview`);
+            if (previewEl) { previewEl.style.display = 'none'; previewEl.src = ''; }
+            const btn = document.getElementById(`${id}-btn`);
+            if (btn) btn.textContent = '📷 Take a photo';
+            return;
+          }
           const el = document.getElementById(id);
           if (!el) return;
           if (isVisible) {
             item[bf.name] = bf.type === 'checkbox' ? (el.checked ? 'yes' : 'no') : el.value.trim();
-            if (bf.type === 'checkbox') el.checked = false; else el.value = '';
-          } else if (bf.type === 'checkbox') {
-            el.checked = false;
-          } else {
-            el.value = '';
           }
+          if (bf.type === 'checkbox') el.checked = false; else el.value = '';
         });
       });
       return;
     }
+ 
+    if (sf.type === 'photo') {
+      const key = nodePhotoKey(modelName, fieldIndex, si);
+      item[sf.name] = pendingNodePhotos[key] || '';
+      resetNodePhoto(modelName, fieldIndex, si);
+      return;
+    }
+ 
     const el = document.getElementById(`node-field-${slugify(modelName)}-${fieldIndex}-${si}`);
     item[sf.name] = el ? el.value.trim() : '';
     if (el) el.value = '';
@@ -963,13 +1110,28 @@ function resetForm(modelName) {
             );
             if (blockEl) blockEl.style.display = 'none';
             branchFields.forEach((bf, bi) => {
-              const bEl = document.getElementById(
-                `node-branch-field-${slugify(modelName)}-${i}-${si}-${slugify(branchValue)}-${bi}`
-              );
+              const bid = `node-branch-field-${slugify(modelName)}-${i}-${si}-${slugify(branchValue)}-${bi}`;
+              if (bf.type === 'photo') {
+                delete pendingBranchPhotos[branchPhotoKey(modelName, i, branchValue, bi)];
+                const fileInput = document.getElementById(bid);
+                if (fileInput) fileInput.value = '';
+                const filenameEl = document.getElementById(`${bid}-filename`);
+                if (filenameEl) filenameEl.textContent = '';
+                const previewEl = document.getElementById(`${bid}-preview`);
+                if (previewEl) { previewEl.style.display = 'none'; previewEl.src = ''; }
+                const btn = document.getElementById(`${bid}-btn`);
+                if (btn) btn.textContent = '📷 Take a photo';
+                return;
+              }
+              const bEl = document.getElementById(bid);
               if (!bEl) return;
               if (bf.type === 'checkbox') bEl.checked = false; else bEl.value = '';
             });
           });
+          return;
+        }
+        if (sf.type === 'photo') {
+          resetNodePhoto(modelName, i, si);
           return;
         }
         const el = document.getElementById(`node-field-${slugify(modelName)}-${i}-${si}`);
