@@ -20,9 +20,9 @@
     --radius:    10px;
     --font:      'DM Mono', 'Courier New', monospace;
   }
- 
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
   body {
     font-family: var(--font);
     background: var(--bg);
@@ -30,7 +30,7 @@
     min-height: 100vh;
     padding: 0 0 60px;
   }
- 
+
   /* ── HEADER ───────────────────────────────────────── */
   header {
     background: var(--accent);
@@ -41,7 +41,7 @@
     justify-content: space-between;
   }
   header h1 { font-size: 1.1rem; letter-spacing: .08em; text-transform: uppercase; }
- 
+
   /* ── TABS ─────────────────────────────────────────── */
   #tab-bar {
     display: flex;
@@ -70,12 +70,12 @@
     color: var(--accent);
     border-bottom-color: var(--accent);
   }
- 
+
   /* ── MAIN CONTENT ─────────────────────────────────── */
   main { padding: 20px 16px; max-width: 680px; margin: auto; }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
- 
+
   /* ── FORM ─────────────────────────────────────────── */
   .form-card {
     background: var(--surface);
@@ -93,7 +93,7 @@
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
   }
- 
+
   .field-group {
     margin-bottom: 14px;
     display: flex;
@@ -122,7 +122,7 @@
   }
   .field-group input:focus,
   .field-group select:focus { border-color: var(--accent); }
- 
+
   /* checkbox row */
   .checkbox-row {
     display: flex;
@@ -139,10 +139,10 @@
     accent-color: var(--accent);
     cursor: pointer;
   }
- 
+
   /* GPS field */
-  .gps-row { display: flex; gap: 8px; align-items: center; }
-  .gps-row input { flex: 1; }
+  .gps-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .gps-row input { flex: 1; min-width: 0; }
   .gps-btn {
     flex-shrink: 0;
     padding: 10px 14px;
@@ -156,9 +156,85 @@
     white-space: nowrap;
   }
   .gps-btn:active { background: var(--accent); color: #fff; }
- 
+
+  /* ── LOCKED ID FIELD ──────────────────────────────── */
+  .id-row {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .id-prefix {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px;
+    background: var(--accent-lt);
+    color: var(--accent);
+    font-size: .9rem;
+    white-space: nowrap;
+    border-right: 1px solid var(--border);
+    user-select: none;
+  }
+  .id-num {
+    border: none !important;
+    border-radius: 0 !important;
+    background: var(--surface) !important;
+    flex: 1;
+    text-align: left;
+    letter-spacing: .12em;
+  }
+  .id-hint { font-size: .68rem; color: var(--muted); font-style: italic; }
+
+  /* ── CLICKER (tally counter) ──────────────────────── */
+  .clicker-row { display: flex; align-items: stretch; gap: 8px; }
+  .clicker-btn {
+    flex-shrink: 0;
+    width: 48px;
+    font-size: 1.3rem;
+    line-height: 1;
+    background: var(--accent-lt);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .clicker-btn:active { background: var(--accent); color: #fff; }
+  .clicker-input { text-align: center; font-size: 1.1rem !important; }
+
+  /* ── MULTI-SELECT (checkbox box) ──────────────────── */
+  .multiselect-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .ms-opt {
+    display: flex !important;
+    align-items: center;
+    gap: 9px;
+    font-size: .85rem !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    color: var(--text) !important;
+    padding: 4px 2px;
+    cursor: pointer;
+  }
+  .ms-opt input { width: 17px; height: 17px; accent-color: var(--accent); flex-shrink: 0; }
+
+  /* ── DATETIME MULTI ───────────────────────────────── */
+  .dtm-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .dtm-row input { flex: 1; }
+
   /* buttons */
-  .btn-row { display: flex; gap: 10px; margin-top: 18px; }
+  .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
   .btn {
     padding: 12px 20px;
     font-family: var(--font);
@@ -171,10 +247,20 @@
     transition: opacity .15s;
   }
   .btn:active { opacity: .75; }
-  .btn-primary { background: var(--accent); color: #fff; flex: 1; }
+  .btn-primary { background: var(--accent); color: #fff; flex: 1; min-width: 150px; }
   .btn-export  { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
   .btn-clear   { background: var(--bg); border: 1px solid var(--danger);  color: var(--danger); }
- 
+  .editing-banner {
+    display: none;
+    background: var(--accent-lt);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: .78rem;
+    margin-bottom: 12px;
+  }
+
   /* ── NODE SECTION ─────────────────────────────────── */
   .node-section {
     border: 1.5px solid var(--node-border);
@@ -262,12 +348,17 @@
     margin-top: 6px;
     font-style: italic;
   }
+  .field-hint {
+    font-size: .68rem;
+    color: var(--muted);
+    font-style: italic;
+  }
   .node-branch {
     border-left: 2px solid var(--node-border);
     padding-left: 10px;
     margin: 8px 0;
   }
- 
+
   /* ── ENTRIES TABLE ────────────────────────────────── */
   .entries-card {
     background: var(--surface);
@@ -309,7 +400,18 @@
     color: var(--node-border);
     white-space: nowrap;
   }
- 
+  .actions-cell { white-space: nowrap; }
+  .row-btn {
+    font-family: var(--font);
+    font-size: .7rem;
+    padding: 5px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 4px;
+  }
+  .row-edit { background: var(--accent-lt); border: 1px solid var(--accent); color: var(--accent); }
+  .row-del  { background: var(--bg); border: 1px solid var(--danger); color: var(--danger); }
+
   /* photo field */
   .photo-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .photo-btn {
@@ -341,107 +443,106 @@
 </style>
 </head>
 <body>
- 
+
 <header>
   <h1>Komana / Yeşilırmak River Valley Archaeological Survey</h1>
   <span id="entry-count" style="font-size:.8rem;opacity:.8"></span>
 </header>
- 
+
 <div id="tab-bar"></div>
 <main id="main"></main>
- 
+
 <script>
 // ═══════════════════════════════════════════════════════
 //  DATA MODELS
 // ═══════════════════════════════════════════════════════
 const AUTHORS = ["Burcu Erciyas", "Maxime Durocher"]; // ← replace/extend with real team names
- 
+
+// Building-material vocabulary (used in counters / hints)
+const BUILDING_MATERIALS = [
+  "Water pipe", "Roof tile", "Brick", "Cut stone", "Rubble / Fieldstone",
+  "Mortar", "Plaster", "Marble", "Terracotta"
+];
+
+const HISTORICAL_PERIODS = [
+  "Modern", "Ottoman", "Medieval (Islamic, 12th–15th)", "Byzantine", "Roman",
+  "Hellenistic", "Iron Age", "Bronze Age", "Chalcolithic"
+];
+
+const SITE_TYPES = [
+  "Settlement Site", "Burial / Funerary Site", "Production / Industrial Site",
+  "Religious / Cultic Site", "Fortified / Defensive Site",
+  "Infrastructure / Civic Site", "Specialized / Ritual or Symbolic Site"
+];
+
+// Build the 5 stop counters (each stop: Ceramics + Building materials)
+const STOP_FIELDS = [];
+for (let s = 1; s <= 5; s++) {
+  STOP_FIELDS.push({ name: `Stop ${s} – Ceramics`,          type: "clicker" });
+  STOP_FIELDS.push({ name: `Stop ${s} – Building materials`, type: "clicker" });
+}
+
 const MODELS = {
- 
+
   "Survey Unit": [
-    { name: "Author",                type: "dropdown", options: AUTHORS },
-    { name: "Date",                   type: "datetime" },
-    { name: "Entry ID",               type: "text" },
-    { name: "Administrative unit",    type: "text" },
-    { name: "Dimensions",             type: "text" },
-    { name: "Coordinates",            type: "gps" },
-    { name: "Type of landscape", type: "dropdown",
-      options: ["Field", "Mountain", "Slope"] },
-    { name: "Survey methodology", type: "dropdown",
-      options: ["Intensive", "Extensive"] },
-    { name: "Includes the transects", type: "text" },
-    { name: "Units adjacent",         type: "text" },
-    { name: "Type of site", type: "dropdown",
-      options: [
-        "Settlement Site", "Burial / Funerary Site", "Production / Industrial Site",
-        "Religious / Cultic Site", "Fortified / Defensive Site",
-        "Infrastructure / Civic Site", "Specialized / Ritual or Symbolic Site"
-      ] },
-    { name: "Historical coverage", type: "dropdown",
+    { name: "Author",                       type: "dropdown", options: AUTHORS },
+    { name: "Date (creation of the entry)", type: "datetime" },
+    { name: "Date of survey",               type: "datetime-multi",
+      hint: "Add one date per survey season carried out on this unit." },
+    // Only the 000 is editable — prefix is locked.
+    { name: "Entry ID",                     type: "id", prefix: "KARP-S26-CMG-SU" },
+    { name: "Administrative unit",          type: "dropdown",
       options: ["to be defined"] },
-    { name: "Comments / Description", type: "text" },
-    { name: "Photo", type: "photo" },
-  ],
- 
-  "Transect": [
-    { name: "Author",                type: "dropdown", options: AUTHORS },
-    { name: "Date",                   type: "datetime" },
-    { name: "Entry ID",               type: "text" },
-    { name: "Survey unit",            type: "text" },
-    { name: "Dimensions",             type: "text" },
-    { name: "Coordinates",            type: "gps" },
-    { name: "Adjacent transects",     type: "text" },
-    { name: "Type of soil", type: "dropdown",
+    { name: "Dimensions",                   type: "text", placeholder: "Length × width" },
+    { name: "Coordinates (x / y / z)",      type: "gps" },
+    { name: "Type of Survey Unit",          type: "dropdown",
+      options: ["Modern field", "Hillslope", "Forest"] },
+    { name: "Type of landscape",            type: "dropdown",
+      options: ["Field", "Mountain", "Slope"] },
+    { name: "Type of soil",                 type: "dropdown",
       options: ["Sandy", "Clay", "Rocky", "Loam"] },
-    { name: "Vegetation",             type: "text" },
-    // ── FINDS NODE ────────────────────────────────────
-    { name: "Finds", type: "node",
-      hint: "Add one entry per find.",
-      nodeFields: [
-        { name: "Category", type: "dropdown",
-          options: ["Ceramics", "Building Material", "Architectural Feature", "Epigraphic Material", "Other"],
-          triggers: "Type / Subtype"
-        },
-        { name: "Type / Subtype", type: "dependent-dropdown", dependsOn: "Category",
-          optionsByValue: {
-            "Ceramics": [
-              "Glazed ware", "Unglazed / Coarse ware", "Fine ware",
-              "Amphora", "Pithos / Storage jar", "Cooking ware",
-              "Table ware", "Tile / Architectural ceramic"
-            ],
-            "Building Material": [
-              "Water pipe", "Roof tile", "Brick",
-              "Cut stone", "Rubble / Fieldstone",
-              "Mortar", "Plaster", "Marble", "Terracotta"
-            ],
-            "Architectural Feature": [
-              "Column", "Capital", "Wall (standing)", "Pavement / Floor",
-              "Arch / Vault", "Doorway / Threshold", "Window / Niche",
-              "Mosaic", "Fresco / Wall painting", "Foundation", "Posthole"
-            ],
-            "Epigraphic Material": [
-              "Funerary inscription", "Building inscription",
-              "Votive inscription", "Honorary inscription",
-              "Boundary marker", "Graffiti", "Fragment (unidentified)"
-            ],
-            "Other": [
-              "Coin", "Metal"
-            ]
-          }
-        },
-        { name: "Coordinates",            type: "gps" },
-        { name: "Collected?",  type: "dropdown", options: ["Yes", "No"] },
-        { name: "Diagnostic?", type: "dropdown", options: ["Yes", "No"] },
-        { name: "ID Number",   type: "text" },
-        { name: "Dimensions",  type: "text" },
-        { name: "Notes",       type: "text" },
-        { name: "Photo",       type: "photo" },
-      ]
-    },
-    // ─────────────────────────────────────────────────
- 
+    { name: "Surface information",          type: "dropdown",
+      options: ["Cultivated", "Untouched", "Plowed"] },
+    { name: "Vegetation",                   type: "text" },
+    { name: "Visibility (%)",               type: "percent",
+      hint: "Grid to refine on site — e.g. 100 = freshly laboured · 80 = wheat recently cut · 30–40 = forest." },
+    { name: "Survey methodology",           type: "dropdown",
+      options: ["Intensive", "Extensive"] },
+    { name: "Includes the transects",       type: "text", placeholder: "Transect ID names" },
+    { name: "Units adjacent",               type: "text" },
+    { name: "Type of site",                 type: "dropdown", options: SITE_TYPES },
+    { name: "Historical coverage",          type: "multiselect", options: HISTORICAL_PERIODS },
+    { name: "Finds / Architectural features / Epigraphy", type: "text",
+      placeholder: "Links to find/architecture entries (added later)" },
+    { name: "Comments / Description",       type: "text" },
+    { name: "Photographs",                  type: "photo" },
+  ],
+
+  "Transect": [
+    { name: "Author / Fieldwalker",   type: "dropdown", options: AUTHORS },
+    { name: "Date",                   type: "datetime" },
+    // Parent survey unit chosen here; its ID feeds the Entry ID below.
+    { name: "Survey unit",            type: "parent-dropdown", sourceModel: "Survey Unit" },
+    // SU000 inherited from the chosen Survey unit; you edit only the TR000.
+    { name: "Entry ID",               type: "id-child", parentField: "Survey unit", mid: "-TR" },
+    { name: "Dimensions",             type: "text", placeholder: "Length (width assumed 1 m)" },
+    { name: "Coordinates (start / end)", type: "gps2" },
+    { name: "Adjacent transects",     type: "text", placeholder: "ID names of adjacent transects" },
+
+    // ── STOP COUNTS (clickers) ────────────────────────
+    ...STOP_FIELDS,
+
+    { name: "Finds – Ceramics TOTAL COUNT",       type: "number" },
+    { name: "Finds – Ceramics DIAGNOSTICS TOTAL", type: "number" },
+    { name: "Description, observations",          type: "text" },
+    { name: "Architectural features?",            type: "checkbox" },
+    { name: "Other finds",                        type: "multiselect",
+      options: ["Coins", "Slags", "Chipped stones"] },
+    { name: "Finds (collected)",                  type: "text",
+      placeholder: "Cross-reference to collected-find entries (added later)" },
+
     // ── ARCHITECTURE & EPIGRAPHY NODE ─────────────────
-    // Separate from Finds. Pick a category, get that type's full sub-form.
+    // Kept from the original model. Pick a category, get that type's full sub-form.
     { name: "Architecture & Epigraphy", type: "node",
       hint: "Add one entry per architectural feature or inscription. Choose a category to see its full form.",
       nodeFields: [
@@ -511,109 +612,102 @@ const MODELS = {
       ]
     },
     // ─────────────────────────────────────────────────
- 
-    { name: "Natural features", type: "dropdown",
-      options: ["Uphill", "Flat", "Downhill"] },
-    { name: "Description, observations", type: "text" },
-    { name: "Photo", type: "photo" },
+
+    { name: "Photographs",  type: "photo" },
   ],
 };
- 
- 
+
+
+// ═══════════════════════════════════════════════════════
+//  EDIT STATE — which entry index is being edited per model
+// ═══════════════════════════════════════════════════════
+const editIndex = {};   // editIndex[modelName] = number | null
+
+
 // ═══════════════════════════════════════════════════════
 //  NODE STATE  — tracks pending node items per form
 // ═══════════════════════════════════════════════════════
 const pendingNodes = {};
- 
+
 function nodeKey(modelName, fieldName) { return `${modelName}::${fieldName}`; }
 function getNodeItems(m, f) { return pendingNodes[nodeKey(m, f)] || []; }
 function setNodeItems(m, f, v) { pendingNodes[nodeKey(m, f)] = v; }
- 
- 
+
+
 // ═══════════════════════════════════════════════════════
 //  PHOTO STATE  — tracks pending photo filename per field
 // ═══════════════════════════════════════════════════════
 const pendingPhotos = {};
- 
+
 function photoKey(modelName, fieldIndex) { return `${modelName}::${fieldIndex}`; }
- 
+
 function onPhotoSelected(modelName, fieldIndex, inputEl) {
   const file = inputEl.files && inputEl.files[0];
   if (!file) return;
- 
-  // iOS Safari often hands back a generic name like "image.jpg" for camera
-  // captures, so we build our own descriptive name instead of trusting file.name.
+
   const ext = (file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const generatedName = `${slugify(modelName)}_${stamp}.${ext}`;
- 
+
   pendingPhotos[photoKey(modelName, fieldIndex)] = generatedName;
- 
+
   const filenameEl = document.getElementById(`photo-filename-${slugify(modelName)}-${fieldIndex}`);
   if (filenameEl) filenameEl.textContent = generatedName;
- 
+
   const previewEl = document.getElementById(`photo-preview-${slugify(modelName)}-${fieldIndex}`);
   if (previewEl) {
     const reader = new FileReader();
-    reader.onload = e => {
-      previewEl.src = e.target.result;
-      previewEl.style.display = 'block';
-    };
+    reader.onload = e => { previewEl.src = e.target.result; previewEl.style.display = 'block'; };
     reader.readAsDataURL(file);
   }
- 
+
   const btn = document.getElementById(`photo-btn-${slugify(modelName)}-${fieldIndex}`);
   if (btn) btn.textContent = '📷 Retake photo';
- 
-  // trigger a download of the photo, renamed, so it's saved alongside the CSV export
+
   const a = document.createElement('a');
   a.href = URL.createObjectURL(file);
   a.download = generatedName;
   a.click();
   URL.revokeObjectURL(a.href);
 }
- 
- 
-// ── PHOTO HANDLER FOR NODE SUB-FORMS (Finds, Architecture & Epigraphy items) ──
-// Each node row gets its own filename slot, keyed by modelName + fieldIndex + nodeFieldIndex.
+
+
+// ── PHOTO HANDLER FOR NODE SUB-FORMS ──
 function nodePhotoKey(modelName, fieldIndex, si) { return `${modelName}::${fieldIndex}::${si}`; }
 const pendingNodePhotos = {};
- 
+
 function onNodePhotoSelected(modelName, fieldIndex, si, inputEl) {
   const file = inputEl.files && inputEl.files[0];
   if (!file) return;
- 
+
   const ext = (file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const field = MODELS[modelName][fieldIndex];
   const generatedName = `${slugify(modelName)}_${slugify(field.name)}_${stamp}.${ext}`;
- 
+
   pendingNodePhotos[nodePhotoKey(modelName, fieldIndex, si)] = generatedName;
- 
+
   const id = `node-field-${slugify(modelName)}-${fieldIndex}-${si}`;
   const filenameEl = document.getElementById(`${id}-filename`);
   if (filenameEl) filenameEl.textContent = generatedName;
- 
+
   const previewEl = document.getElementById(`${id}-preview`);
   if (previewEl) {
     const reader = new FileReader();
-    reader.onload = e => {
-      previewEl.src = e.target.result;
-      previewEl.style.display = 'block';
-    };
+    reader.onload = e => { previewEl.src = e.target.result; previewEl.style.display = 'block'; };
     reader.readAsDataURL(file);
   }
- 
+
   const btn = document.getElementById(`${id}-btn`);
   if (btn) btn.textContent = '📷 Retake photo';
- 
+
   const a = document.createElement('a');
   a.href = URL.createObjectURL(file);
   a.download = generatedName;
   a.click();
   URL.revokeObjectURL(a.href);
 }
- 
+
 function resetNodePhoto(modelName, fieldIndex, si) {
   delete pendingNodePhotos[nodePhotoKey(modelName, fieldIndex, si)];
   const id = `node-field-${slugify(modelName)}-${fieldIndex}-${si}`;
@@ -626,64 +720,60 @@ function resetNodePhoto(modelName, fieldIndex, si) {
   const btn = document.getElementById(`${id}-btn`);
   if (btn) btn.textContent = '📷 Take a photo';
 }
- 
- 
-// ── PHOTO HANDLER FOR BRANCH SUB-FIELDS (Architecture & Epigraphy details) ──
+
+
+// ── PHOTO HANDLER FOR BRANCH SUB-FIELDS ──
 const pendingBranchPhotos = {};
 function branchPhotoKey(modelName, fieldIndex, branchValue, bi) {
   return `${modelName}::${fieldIndex}::${branchValue}::${bi}`;
 }
- 
+
 function onBranchPhotoSelected(modelName, fieldIndex, branchValue, bi, inputEl) {
   const file = inputEl.files && inputEl.files[0];
   if (!file) return;
- 
+
   const ext = (file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const generatedName = `${slugify(modelName)}_${slugify(branchValue)}_${stamp}.${ext}`;
- 
+
   pendingBranchPhotos[branchPhotoKey(modelName, fieldIndex, branchValue, bi)] = generatedName;
- 
+
   const id = `node-branch-field-${slugify(modelName)}-${fieldIndex}-${slugify(branchValue)}-${bi}`;
   const filenameEl = document.getElementById(`${id}-filename`);
   if (filenameEl) filenameEl.textContent = generatedName;
- 
+
   const previewEl = document.getElementById(`${id}-preview`);
   if (previewEl) {
     const reader = new FileReader();
-    reader.onload = e => {
-      previewEl.src = e.target.result;
-      previewEl.style.display = 'block';
-    };
+    reader.onload = e => { previewEl.src = e.target.result; previewEl.style.display = 'block'; };
     reader.readAsDataURL(file);
   }
- 
+
   const btn = document.getElementById(`${id}-btn`);
   if (btn) btn.textContent = '📷 Retake photo';
- 
+
   const a = document.createElement('a');
   a.href = URL.createObjectURL(file);
   a.download = generatedName;
   a.click();
   URL.revokeObjectURL(a.href);
 }
- 
- 
- 
+
+
 // ═══════════════════════════════════════════════════════
-//  SLUGIFY — safe IDs from model names (avoids spaces in DOM ids,
-//  which mobile Safari handles inconsistently)
+//  SLUGIFY
 // ═══════════════════════════════════════════════════════
 function slugify(name) {
   return String(name).replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
 }
- 
- 
+function escAttr(s) { return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+
 // ═══════════════════════════════════════════════════════
 //  STORAGE
 // ═══════════════════════════════════════════════════════
 const storageKey = name => `fieldform_${name}`;
- 
+
 function loadEntries(modelName) {
   try { return JSON.parse(localStorage.getItem(storageKey(modelName))) || []; }
   catch { return []; }
@@ -691,8 +781,8 @@ function loadEntries(modelName) {
 function saveEntries(modelName, entries) {
   localStorage.setItem(storageKey(modelName), JSON.stringify(entries));
 }
- 
- 
+
+
 // ═══════════════════════════════════════════════════════
 //  BUILD UI
 // ═══════════════════════════════════════════════════════
@@ -700,146 +790,256 @@ const tabBar = document.getElementById('tab-bar');
 const mainEl = document.getElementById('main');
 const models = Object.keys(MODELS);
 let activeTab = models[0];
- 
+
 models.forEach(name => {
+  editIndex[name] = null;
+
   const btn = document.createElement('button');
   btn.className = 'tab-btn' + (name === activeTab ? ' active' : '');
   btn.textContent = name;
   btn.onclick = () => switchTab(name);
   tabBar.appendChild(btn);
- 
+
   const panel = document.createElement('div');
   panel.className = 'tab-panel' + (name === activeTab ? ' active' : '');
   panel.id = `panel-${slugify(name)}`;
   panel.innerHTML = buildPanel(name);
   mainEl.appendChild(panel);
- 
-  // wire GPS buttons
-  MODELS[name].forEach((field, i) => {
-    if (field.type === 'gps') {
-      document.getElementById(`gps-btn-${slugify(name)}-${i}`)
-        ?.addEventListener('click', () => getGPS(name, i));
-    }
-  });
- 
+
   renderTable(name);
 });
- 
+
+refreshParentDropdowns();
 updateCount();
- 
+
 function switchTab(name) {
   activeTab = name;
   document.querySelectorAll('.tab-btn').forEach((b, i) =>
     b.classList.toggle('active', models[i] === name));
   document.querySelectorAll('.tab-panel').forEach(p =>
     p.classList.toggle('active', p.id === `panel-${slugify(name)}`));
+  refreshParentDropdowns();
   updateCount();
 }
- 
- 
+
+
 // ── BUILD PANEL ───────────────────────────────────────
 function buildPanel(name) {
+  const slug = slugify(name);
   const fieldsHtml = MODELS[name].map((f, i) => buildField(f, name, i)).join('');
   return `
     <div class="form-card">
-      <h2>New entry — ${name}</h2>
-      <div id="fields-${slugify(name)}">${fieldsHtml}</div>
+      <h2 id="form-title-${slug}">New entry — ${name}</h2>
+      <div class="editing-banner" id="edit-banner-${slug}"></div>
+      <div id="fields-${slug}">${fieldsHtml}</div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="submitEntry('${name}')">＋ Add entry</button>
-        <button class="btn btn-export"  onclick="exportCSV('${name}')">↓ CSV</button>
-        <button class="btn btn-clear"   onclick="clearEntries('${name}')">✕</button>
+        <button class="btn btn-primary" id="submit-btn-${slug}" onclick="submitEntry('${escAttr(name)}')">＋ Add entry</button>
+        <button class="btn btn-clear" id="cancel-btn-${slug}" style="display:none" onclick="cancelEdit('${escAttr(name)}')">Cancel edit</button>
+        <button class="btn btn-export"  onclick="exportCSV('${escAttr(name)}')">↓ CSV</button>
+        <button class="btn btn-clear"   onclick="clearEntries('${escAttr(name)}')">✕ All</button>
       </div>
     </div>
     <div class="entries-card">
       <h2>Entries</h2>
-      <div class="entries-wrap"><div id="table-${name}"></div></div>
+      <div class="entries-wrap"><div id="table-${slug}"></div></div>
     </div>`;
 }
- 
- 
+
+
 // ── FIELD BUILDER ─────────────────────────────────────
 function buildField(field, modelName, i) {
-  const id = `field-${slugify(modelName)}-${i}`;
+  const slug = slugify(modelName);
+  const id = `field-${slug}-${i}`;
   const label = `<label for="${id}">${field.name}</label>`;
- 
+  const hint = field.hint ? `<span class="field-hint">${field.hint}</span>` : '';
+  const ph = field.placeholder || field.name;
+
   switch (field.type) {
     case 'text':
-      return `<div class="field-group">${label}<input id="${id}" type="text" placeholder="${field.name}"></div>`;
+      return `<div class="field-group">${label}<input id="${id}" type="text" placeholder="${ph}">${hint}</div>`;
     case 'number':
-      return `<div class="field-group">${label}<input id="${id}" type="number" placeholder="0"></div>`;
+      return `<div class="field-group">${label}<input id="${id}" type="number" placeholder="0">${hint}</div>`;
+    case 'percent':
+      return `<div class="field-group">${label}<input id="${id}" type="number" min="0" max="100" step="1" placeholder="0–100">${hint}</div>`;
     case 'datetime':
-      return `<div class="field-group">${label}<input id="${id}" type="datetime-local"></div>`;
+      return `<div class="field-group">${label}<input id="${id}" type="datetime-local">${hint}</div>`;
+    case 'datetime-multi':
+      return `<div class="field-group">${label}
+        <div id="${id}-rows">${dtmRowHTML('')}</div>
+        <button type="button" class="node-add-btn" onclick="addDtmRow('${id}')">＋ Add date</button>
+        ${hint}</div>`;
     case 'year':
-      return `<div class="field-group">${label}<input id="${id}" type="number" min="1000" max="2100" placeholder="YYYY"></div>`;
+      return `<div class="field-group">${label}<input id="${id}" type="number" min="1000" max="2100" placeholder="YYYY">${hint}</div>`;
     case 'url':
-      return `<div class="field-group">${label}<input id="${id}" type="url" placeholder="https://"></div>`;
+      return `<div class="field-group">${label}<input id="${id}" type="url" placeholder="https://">${hint}</div>`;
     case 'dropdown': {
       const opts = field.options.map(o => `<option value="${o}">${o}</option>`).join('');
-      return `<div class="field-group">${label}<select id="${id}"><option value="">— select —</option>${opts}</select></div>`;
+      return `<div class="field-group">${label}<select id="${id}"><option value="">— select —</option>${opts}</select>${hint}</div>`;
+    }
+    case 'multiselect': {
+      const opts = field.options.map(o =>
+        `<label class="ms-opt"><input type="checkbox" value="${o}"> ${o}</label>`).join('');
+      return `<div class="field-group">${label}<div class="multiselect-box" id="${id}">${opts}</div>${hint}</div>`;
     }
     case 'checkbox':
       return `<div class="field-group"><label>${field.name}</label>
-        <label class="checkbox-row"><input id="${id}" type="checkbox"> ${field.name}</label></div>`;
+        <label class="checkbox-row"><input id="${id}" type="checkbox"> Yes</label>${hint}</div>`;
+    case 'clicker':
+      return `<div class="field-group">${label}
+        <div class="clicker-row">
+          <button type="button" class="clicker-btn" onclick="bump('${id}',-1)">−</button>
+          <input id="${id}" class="clicker-input" type="number" inputmode="numeric" min="0" value="0">
+          <button type="button" class="clicker-btn" onclick="bump('${id}',1)">＋</button>
+        </div>${hint}</div>`;
+    case 'id': {
+      return `<div class="field-group">${label}
+        <div class="id-row">
+          <span class="id-prefix">${field.prefix}</span>
+          <input id="${id}-num" class="id-num" type="text" inputmode="numeric" value="000" maxlength="6">
+        </div>
+        <span class="id-hint">Only the number is editable — the rest is fixed.</span>${hint}</div>`;
+    }
+    case 'id-child': {
+      return `<div class="field-group">${label}
+        <div class="id-row">
+          <span class="id-prefix" id="${id}-prefix">— select a survey unit —</span>
+          <span class="id-prefix" style="background:var(--bg)">${field.mid}</span>
+          <input id="${id}-num" class="id-num" type="text" inputmode="numeric" value="000" maxlength="6">
+        </div>
+        <span class="id-hint">The survey-unit part is inherited; you edit only the transect number.</span>${hint}</div>`;
+    }
+    case 'parent-dropdown':
+      return `<div class="field-group">${label}
+        <select id="${id}" onchange="onParentChange('${escAttr(modelName)}', ${i})">
+          <option value="">— select —</option>
+        </select>${hint}</div>`;
     case 'gps':
       return `<div class="field-group">${label}
         <div class="gps-row">
-          <input id="${id}-lat" type="text" placeholder="Latitude"  readonly>
-          <input id="${id}-lon" type="text" placeholder="Longitude" readonly>
-          <button class="gps-btn" id="gps-btn-${modelName}-${i}">📍 Get</button>
-        </div></div>`;
+          <input id="${id}-x" type="text" placeholder="x (lat)" readonly>
+          <input id="${id}-y" type="text" placeholder="y (lon)" readonly>
+          <input id="${id}-z" type="text" placeholder="z (alt)" readonly>
+          <button type="button" class="gps-btn" id="gps-btn-${slug}-${i}" onclick="getGPS('${escAttr(modelName)}', ${i})">📍 Get</button>
+        </div>${hint}</div>`;
+    case 'gps2':
+      return `<div class="field-group">${label}
+        <div class="gps-row">
+          <input id="${id}-s-lat" type="text" placeholder="Start lat" readonly>
+          <input id="${id}-s-lon" type="text" placeholder="Start lon" readonly>
+          <button type="button" class="gps-btn" id="gps-btn-${slug}-${i}-s" onclick="getGPS2('${escAttr(modelName)}', ${i}, 's')">📍 Start</button>
+        </div>
+        <div class="gps-row">
+          <input id="${id}-e-lat" type="text" placeholder="End lat" readonly>
+          <input id="${id}-e-lon" type="text" placeholder="End lon" readonly>
+          <button type="button" class="gps-btn" id="gps-btn-${slug}-${i}-e" onclick="getGPS2('${escAttr(modelName)}', ${i}, 'e')">📍 End</button>
+        </div>${hint}</div>`;
     case 'node':
       return buildNodeField(field, modelName, i);
     case 'photo':
       return `<div class="field-group">${label}
         <div class="photo-row">
           <input id="${id}" type="file" accept="image/*" capture="environment" style="display:none"
-            onchange="onPhotoSelected('${modelName}', ${i}, this)">
-          <button type="button" class="photo-btn" id="photo-btn-${modelName}-${i}"
+            onchange="onPhotoSelected('${escAttr(modelName)}', ${i}, this)">
+          <button type="button" class="photo-btn" id="photo-btn-${slug}-${i}"
             onclick="document.getElementById('${id}').click()">📷 Take a photo</button>
-          <span class="photo-filename" id="photo-filename-${modelName}-${i}"></span>
+          <span class="photo-filename" id="photo-filename-${slug}-${i}"></span>
         </div>
-        <img class="photo-preview" id="photo-preview-${modelName}-${i}" style="display:none">
+        <img class="photo-preview" id="photo-preview-${slug}-${i}" style="display:none">
       </div>`;
     default:
-      return `<div class="field-group">${label}<input id="${id}" type="text"></div>`;
+      return `<div class="field-group">${label}<input id="${id}" type="text">${hint}</div>`;
   }
 }
- 
- 
+
+// datetime-multi row markup
+function dtmRowHTML(value) {
+  return `<div class="dtm-row">
+    <input type="datetime-local" class="dtm-input" value="${value || ''}">
+    <button type="button" class="node-remove" onclick="this.parentNode.remove()">✕</button>
+  </div>`;
+}
+function addDtmRow(boxId, value) {
+  const rows = document.getElementById(`${boxId}-rows`);
+  if (rows) rows.insertAdjacentHTML('beforeend', dtmRowHTML(value || ''));
+}
+
+// clicker increment/decrement
+function bump(id, delta) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let v = parseInt(el.value || '0', 10);
+  if (isNaN(v)) v = 0;
+  v += delta;
+  if (v < 0) v = 0;
+  el.value = v;
+}
+
+
+// ── PARENT DROPDOWN (inherit survey-unit ID) ──────────
+function refreshParentDropdowns() {
+  models.forEach(modelName => {
+    MODELS[modelName].forEach((field, i) => {
+      if (field.type !== 'parent-dropdown') return;
+      const el = document.getElementById(`field-${slugify(modelName)}-${i}`);
+      if (!el) return;
+      const current = el.value;
+      const sourceEntries = loadEntries(field.sourceModel);
+      const ids = sourceEntries.map(e => e['Entry ID']).filter(Boolean);
+      el.innerHTML = `<option value="">— select —</option>` +
+        ids.map(id => `<option value="${id}">${id}</option>`).join('');
+      if (ids.includes(current)) el.value = current;
+    });
+  });
+}
+
+function onParentChange(modelName, parentFieldIndex) {
+  const slug = slugify(modelName);
+  const parentVal = (document.getElementById(`field-${slug}-${parentFieldIndex}`) || {}).value || '';
+  const parentName = MODELS[modelName][parentFieldIndex].name;
+  // update any id-child whose parentField points here
+  MODELS[modelName].forEach((field, i) => {
+    if (field.type === 'id-child' && field.parentField === parentName) {
+      const prefixEl = document.getElementById(`field-${slug}-${i}-prefix`);
+      if (prefixEl) prefixEl.textContent = parentVal || '— select a survey unit —';
+    }
+  });
+}
+
+
 // ── NODE FIELD BUILDER ────────────────────────────────
 function buildNodeField(field, modelName, fieldIndex) {
   setNodeItems(modelName, field.name, []);
- 
+  const slug = slugify(modelName);
+
   const subHtml = field.nodeFields.map((sf, si) =>
     buildSubField(sf, modelName, fieldIndex, si)
   ).join('');
- 
-  const hint = field.hint
-    ? `<p class="node-hint">${field.hint}</p>`
-    : '';
- 
+
+  const hint = field.hint ? `<p class="node-hint">${field.hint}</p>` : '';
+
   return `
     <div class="node-section">
       <div class="node-header">
         <h3>${field.name}</h3>
-        <span class="node-count" id="node-count-${modelName}-${fieldIndex}">none added</span>
+        <span class="node-count" id="node-count-${slug}-${fieldIndex}">none added</span>
       </div>
-      <div class="node-list" id="node-list-${modelName}-${fieldIndex}"></div>
+      <div class="node-list" id="node-list-${slug}-${fieldIndex}"></div>
       <div class="node-subform">
         ${subHtml}
-        <button class="node-add-btn" onclick="addNodeItem('${modelName}', ${fieldIndex})">＋ Add</button>
+        <button class="node-add-btn" onclick="addNodeItem('${escAttr(modelName)}', ${fieldIndex})">＋ Add</button>
       </div>
       ${hint}
     </div>`;
 }
- 
+
 function buildSubField(sf, modelName, fieldIndex, si) {
-  const id  = `node-field-${slugify(modelName)}-${fieldIndex}-${si}`;
+  const slug = slugify(modelName);
+  const id  = `node-field-${slug}-${fieldIndex}-${si}`;
   const lbl = `<label for="${id}">${sf.name}</label>`;
- 
+
   if (sf.type === 'dropdown') {
     const onChange = sf.triggers
-      ? ` onchange="onNodeFieldChange('${modelName}', ${fieldIndex}, ${si}, this.value)"`
+      ? ` onchange="onNodeFieldChange('${escAttr(modelName)}', ${fieldIndex}, ${si}, this.value)"`
       : '';
     const opts = sf.options.map(o => `<option value="${o}">${o}</option>`).join('');
     return `<div class="field-group">${lbl}<select id="${id}"${onChange}><option value="">— select —</option>${opts}</select></div>`;
@@ -856,15 +1056,24 @@ function buildSubField(sf, modelName, fieldIndex, si) {
   if (sf.type === 'number') return `<div class="field-group">${lbl}<input id="${id}" type="number" placeholder="0"></div>`;
   if (sf.type === 'year')   return `<div class="field-group">${lbl}<input id="${id}" type="number" min="1000" max="2100" placeholder="YYYY"></div>`;
   if (sf.type === 'url')    return `<div class="field-group">${lbl}<input id="${id}" type="url" placeholder="https://"></div>`;
+  if (sf.type === 'gps') {
+    return `<div class="field-group">${lbl}
+      <div class="gps-row">
+        <input id="${id}-x" type="text" placeholder="x (lat)" readonly>
+        <input id="${id}-y" type="text" placeholder="y (lon)" readonly>
+        <input id="${id}-z" type="text" placeholder="z (alt)" readonly>
+        <button type="button" class="gps-btn" onclick="getNodeGPS('${id}')">📍 Get</button>
+      </div></div>`;
+  }
   if (sf.type === 'checkbox') {
     return `<div class="field-group"><label>${sf.name}</label>
-      <label class="checkbox-row"><input id="${id}" type="checkbox"> ${sf.name}</label></div>`;
+      <label class="checkbox-row"><input id="${id}" type="checkbox"> Yes</label></div>`;
   }
   if (sf.type === 'photo') {
     return `<div class="field-group">${lbl}
       <div class="photo-row">
         <input id="${id}" type="file" accept="image/*" capture="environment" style="display:none"
-          onchange="onNodePhotoSelected('${modelName}', ${fieldIndex}, ${si}, this)">
+          onchange="onNodePhotoSelected('${escAttr(modelName)}', ${fieldIndex}, ${si}, this)">
         <button type="button" class="photo-btn" id="${id}-btn"
           onclick="document.getElementById('${id}').click()">📷 Take a photo</button>
         <span class="photo-filename" id="${id}-filename"></span>
@@ -874,38 +1083,46 @@ function buildSubField(sf, modelName, fieldIndex, si) {
   }
   return `<div class="field-group">${lbl}<input id="${id}" type="text" placeholder="${sf.name}"></div>`;
 }
- 
-// ── BRANCH SUB-FIELDS (conditional full field sets inside a node) ──
-// A branch field shows an entirely different set of fields depending on
-// the value of a trigger dropdown elsewhere in the same node (e.g. pick
-// "Architectural Feature" vs "Epigraphic Material" → see that type's fields).
+
+// ── BRANCH SUB-FIELDS ──
 function buildBranchBlock(branchField, modelName, fieldIndex, si) {
+  const slug = slugify(modelName);
   const blocksHtml = Object.entries(branchField.branches).map(([branchValue, branchFields]) => {
     const fieldsHtml = branchFields.map((bf, bi) =>
       buildBranchSubField(bf, modelName, fieldIndex, si, branchValue, bi)
     ).join('');
-    return `<div class="node-branch" id="node-branch-${slugify(modelName)}-${fieldIndex}-${si}-${slugify(branchValue)}" style="display:none">${fieldsHtml}</div>`;
+    return `<div class="node-branch" id="node-branch-${slug}-${fieldIndex}-${si}-${slugify(branchValue)}" style="display:none">${fieldsHtml}</div>`;
   }).join('');
   return blocksHtml;
 }
- 
+
 function buildBranchSubField(bf, modelName, fieldIndex, si, branchValue, bi) {
-  const id  = `node-branch-field-${slugify(modelName)}-${fieldIndex}-${si}-${slugify(branchValue)}-${bi}`;
+  const slug = slugify(modelName);
+  const id  = `node-branch-field-${slug}-${fieldIndex}-${si}-${slugify(branchValue)}-${bi}`;
   const lbl = `<label for="${id}">${bf.name}</label>`;
- 
+
   if (bf.type === 'dropdown') {
     const opts = bf.options.map(o => `<option value="${o}">${o}</option>`).join('');
     return `<div class="field-group">${lbl}<select id="${id}"><option value="">— select —</option>${opts}</select></div>`;
   }
   if (bf.type === 'checkbox') {
     return `<div class="field-group"><label>${bf.name}</label>
-      <label class="checkbox-row"><input id="${id}" type="checkbox"> ${bf.name}</label></div>`;
+      <label class="checkbox-row"><input id="${id}" type="checkbox"> Yes</label></div>`;
+  }
+  if (bf.type === 'gps') {
+    return `<div class="field-group">${lbl}
+      <div class="gps-row">
+        <input id="${id}-x" type="text" placeholder="x (lat)" readonly>
+        <input id="${id}-y" type="text" placeholder="y (lon)" readonly>
+        <input id="${id}-z" type="text" placeholder="z (alt)" readonly>
+        <button type="button" class="gps-btn" onclick="getNodeGPS('${id}')">📍 Get</button>
+      </div></div>`;
   }
   if (bf.type === 'photo') {
     return `<div class="field-group">${lbl}
       <div class="photo-row">
         <input id="${id}" type="file" accept="image/*" capture="environment" style="display:none"
-          onchange="onBranchPhotoSelected('${modelName}', ${fieldIndex}, '${branchValue}', ${bi}, this)">
+          onchange="onBranchPhotoSelected('${escAttr(modelName)}', ${fieldIndex}, '${escAttr(branchValue)}', ${bi}, this)">
         <button type="button" class="photo-btn" id="${id}-btn"
           onclick="document.getElementById('${id}').click()">📷 Take a photo</button>
         <span class="photo-filename" id="${id}-filename"></span>
@@ -916,15 +1133,16 @@ function buildBranchSubField(bf, modelName, fieldIndex, si, branchValue, bi) {
   if (bf.type === 'number') return `<div class="field-group">${lbl}<input id="${id}" type="number" placeholder="0"></div>`;
   return `<div class="field-group">${lbl}<input id="${id}" type="text" placeholder="${bf.name}"></div>`;
 }
- 
+
 // ── CASCADING DROPDOWN HANDLER ────────────────────────
 function onNodeFieldChange(modelName, fieldIndex, triggerSubIndex, value) {
+  const slug = slugify(modelName);
   const field = MODELS[modelName][fieldIndex];
   const triggerField = field.nodeFields[triggerSubIndex];
- 
+
   field.nodeFields.forEach((sf, si) => {
     if (sf.type === 'dependent-dropdown' && sf.dependsOn === triggerField.name) {
-      const el = document.getElementById(`node-field-${slugify(modelName)}-${fieldIndex}-${si}`);
+      const el = document.getElementById(`node-field-${slug}-${fieldIndex}-${si}`);
       if (!el) return;
       const opts = (sf.optionsByValue[value] || []);
       el.innerHTML = opts.length
@@ -933,41 +1151,38 @@ function onNodeFieldChange(modelName, fieldIndex, triggerSubIndex, value) {
       el.disabled = !opts.length;
       el.style.opacity = opts.length ? '1' : '.5';
     }
- 
     if (sf.type === 'branch' && sf.dependsOn === triggerField.name) {
       Object.keys(sf.branches).forEach(branchValue => {
         const blockEl = document.getElementById(
-          `node-branch-${slugify(modelName)}-${fieldIndex}-${si}-${slugify(branchValue)}`
+          `node-branch-${slug}-${fieldIndex}-${si}-${slugify(branchValue)}`
         );
         if (blockEl) blockEl.style.display = (branchValue === value) ? 'block' : 'none';
       });
     }
   });
 }
- 
- 
+
+
 // ── ADD / REMOVE NODE ITEMS ───────────────────────────
 function addNodeItem(modelName, fieldIndex) {
+  const slug = slugify(modelName);
   const field = MODELS[modelName][fieldIndex];
   if (!field || field.type !== 'node') return;
- 
+
   const item = {};
- 
+
   field.nodeFields.forEach((sf, si) => {
     if (sf.type === 'branch') {
-      // find which branch is currently visible and read its fields
       Object.entries(sf.branches).forEach(([branchValue, branchFields]) => {
         const blockEl = document.getElementById(
-          `node-branch-${slugify(modelName)}-${fieldIndex}-${si}-${slugify(branchValue)}`
+          `node-branch-${slug}-${fieldIndex}-${si}-${slugify(branchValue)}`
         );
         const isVisible = blockEl && blockEl.style.display !== 'none';
         branchFields.forEach((bf, bi) => {
-          const id = `node-branch-field-${slugify(modelName)}-${fieldIndex}-${si}-${slugify(branchValue)}-${bi}`;
+          const id = `node-branch-field-${slug}-${fieldIndex}-${si}-${slugify(branchValue)}-${bi}`;
           if (bf.type === 'photo') {
             const key = branchPhotoKey(modelName, fieldIndex, branchValue, bi);
-            if (isVisible) {
-              item[bf.name] = pendingBranchPhotos[key] || '';
-            }
+            if (isVisible) item[bf.name] = pendingBranchPhotos[key] || '';
             delete pendingBranchPhotos[key];
             const fileInput = document.getElementById(id);
             if (fileInput) fileInput.value = '';
@@ -977,6 +1192,14 @@ function addNodeItem(modelName, fieldIndex) {
             if (previewEl) { previewEl.style.display = 'none'; previewEl.src = ''; }
             const btn = document.getElementById(`${id}-btn`);
             if (btn) btn.textContent = '📷 Take a photo';
+            return;
+          }
+          if (bf.type === 'gps') {
+            const x = (document.getElementById(`${id}-x`) || {}).value || '';
+            const y = (document.getElementById(`${id}-y`) || {}).value || '';
+            const z = (document.getElementById(`${id}-z`) || {}).value || '';
+            if (isVisible) item[bf.name] = (x || y || z) ? `${x},${y},${z}` : '';
+            ['-x', '-y', '-z'].forEach(s => { const e = document.getElementById(`${id}${s}`); if (e) e.value = ''; });
             return;
           }
           const el = document.getElementById(id);
@@ -989,38 +1212,49 @@ function addNodeItem(modelName, fieldIndex) {
       });
       return;
     }
- 
+
     if (sf.type === 'photo') {
       const key = nodePhotoKey(modelName, fieldIndex, si);
       item[sf.name] = pendingNodePhotos[key] || '';
       resetNodePhoto(modelName, fieldIndex, si);
       return;
     }
- 
-    const el = document.getElementById(`node-field-${slugify(modelName)}-${fieldIndex}-${si}`);
-    item[sf.name] = el ? el.value.trim() : '';
-    if (el) el.value = '';
+
+    if (sf.type === 'gps') {
+      const id = `node-field-${slug}-${fieldIndex}-${si}`;
+      const x = (document.getElementById(`${id}-x`) || {}).value || '';
+      const y = (document.getElementById(`${id}-y`) || {}).value || '';
+      const z = (document.getElementById(`${id}-z`) || {}).value || '';
+      item[sf.name] = (x || y || z) ? `${x},${y},${z}` : '';
+      ['-x', '-y', '-z'].forEach(s => { const e = document.getElementById(`${id}${s}`); if (e) e.value = ''; });
+      return;
+    }
+
+    const el = document.getElementById(`node-field-${slug}-${fieldIndex}-${si}`);
+    if (!el) return;
+    item[sf.name] = sf.type === 'checkbox' ? (el.checked ? 'yes' : 'no') : el.value.trim();
+    if (sf.type === 'checkbox') el.checked = false; else el.value = '';
   });
- 
-  if (Object.values(item).every(v => !v)) return; // nothing filled
- 
+
+  if (Object.values(item).every(v => !v || v === 'no')) return; // nothing filled
+
   const items = getNodeItems(modelName, field.name);
   items.push(item);
   setNodeItems(modelName, field.name, items);
   renderNodeList(modelName, fieldIndex, field);
- 
+
   // hide all branch blocks again after submit
   field.nodeFields.forEach((sf, si) => {
     if (sf.type !== 'branch') return;
     Object.keys(sf.branches).forEach(branchValue => {
       const blockEl = document.getElementById(
-        `node-branch-${slugify(modelName)}-${fieldIndex}-${si}-${slugify(branchValue)}`
+        `node-branch-${slug}-${fieldIndex}-${si}-${slugify(branchValue)}`
       );
       if (blockEl) blockEl.style.display = 'none';
     });
   });
 }
- 
+
 function removeNodeItem(modelName, fieldIndex, idx) {
   const field = MODELS[modelName][fieldIndex];
   const items = getNodeItems(modelName, field.name);
@@ -1028,92 +1262,318 @@ function removeNodeItem(modelName, fieldIndex, idx) {
   setNodeItems(modelName, field.name, items);
   renderNodeList(modelName, fieldIndex, field);
 }
- 
+
 function renderNodeList(modelName, fieldIndex, field) {
+  const slug = slugify(modelName);
   const items   = getNodeItems(modelName, field.name);
-  const listEl  = document.getElementById(`node-list-${slugify(modelName)}-${fieldIndex}`);
-  const countEl = document.getElementById(`node-count-${slugify(modelName)}-${fieldIndex}`);
- 
+  const listEl  = document.getElementById(`node-list-${slug}-${fieldIndex}`);
+  const countEl = document.getElementById(`node-count-${slug}-${fieldIndex}`);
+
   if (countEl) countEl.textContent = items.length ? `${items.length} added` : 'none added';
   if (!listEl) return;
- 
+
   listEl.innerHTML = items.map((item, idx) => {
     const summary = Object.entries(item)
-      .filter(([, v]) => v)
+      .filter(([, v]) => v && v !== 'no')
       .map(([k, v]) => `<strong>${k}:</strong> ${v}`)
       .join('  ·  ');
     return `<div class="node-item">
       <span class="node-item-text">${summary || '(empty)'}</span>
-      <button class="node-remove" title="Remove" onclick="removeNodeItem('${modelName}', ${fieldIndex}, ${idx})">✕</button>
+      <button class="node-remove" title="Remove" onclick="removeNodeItem('${escAttr(modelName)}', ${fieldIndex}, ${idx})">✕</button>
     </div>`;
   }).join('');
 }
- 
- 
+
+
 // ── GPS ───────────────────────────────────────────────
 function getGPS(modelName, fieldIndex) {
-  const id  = `field-${slugify(modelName)}-${fieldIndex}`;
-  const btn = document.getElementById(`gps-btn-${slugify(modelName)}-${fieldIndex}`);
-  btn.textContent = '…';
+  const slug = slugify(modelName);
+  const id  = `field-${slug}-${fieldIndex}`;
+  const btn = document.getElementById(`gps-btn-${slug}-${fieldIndex}`);
+  if (btn) btn.textContent = '…';
   navigator.geolocation.getCurrentPosition(
     pos => {
-      document.getElementById(`${id}-lat`).value = pos.coords.latitude.toFixed(6);
-      document.getElementById(`${id}-lon`).value = pos.coords.longitude.toFixed(6);
-      btn.textContent = '✓';
+      document.getElementById(`${id}-x`).value = pos.coords.latitude.toFixed(6);
+      document.getElementById(`${id}-y`).value = pos.coords.longitude.toFixed(6);
+      const z = document.getElementById(`${id}-z`);
+      if (z) z.value = (pos.coords.altitude != null) ? pos.coords.altitude.toFixed(1) : '';
+      if (btn) btn.textContent = '✓';
     },
-    err => { alert('GPS error: ' + err.message); btn.textContent = '📍 Get'; },
+    err => { alert('GPS error: ' + err.message); if (btn) btn.textContent = '📍 Get'; },
     { enableHighAccuracy: true, timeout: 10000 }
   );
 }
- 
- 
-// ── SUBMIT ────────────────────────────────────────────
+
+function getGPS2(modelName, fieldIndex, which) {
+  const slug = slugify(modelName);
+  const id  = `field-${slug}-${fieldIndex}`;
+  const btn = document.getElementById(`gps-btn-${slug}-${fieldIndex}-${which}`);
+  const label = which === 's' ? '📍 Start' : '📍 End';
+  if (btn) btn.textContent = '…';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      document.getElementById(`${id}-${which}-lat`).value = pos.coords.latitude.toFixed(6);
+      document.getElementById(`${id}-${which}-lon`).value = pos.coords.longitude.toFixed(6);
+      if (btn) btn.textContent = '✓';
+    },
+    err => { alert('GPS error: ' + err.message); if (btn) btn.textContent = label; },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function getNodeGPS(baseId) {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const x = document.getElementById(`${baseId}-x`);
+      const y = document.getElementById(`${baseId}-y`);
+      const z = document.getElementById(`${baseId}-z`);
+      if (x) x.value = pos.coords.latitude.toFixed(6);
+      if (y) y.value = pos.coords.longitude.toFixed(6);
+      if (z) z.value = (pos.coords.altitude != null) ? pos.coords.altitude.toFixed(1) : '';
+    },
+    err => alert('GPS error: ' + err.message),
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+
+// ── COLLECT ONE FIELD'S VALUE FROM THE FORM ───────────
+function collectField(field, modelName, i) {
+  const slug = slugify(modelName);
+  const id = `field-${slug}-${i}`;
+  switch (field.type) {
+    case 'node':
+      return getNodeItems(modelName, field.name);
+    case 'photo':
+      return pendingPhotos[photoKey(modelName, i)] || '';
+    case 'checkbox':
+      return document.getElementById(id).checked ? 'yes' : 'no';
+    case 'multiselect': {
+      const box = document.getElementById(id);
+      if (!box) return '';
+      return Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value).join(', ');
+    }
+    case 'datetime-multi': {
+      const rows = document.getElementById(`${id}-rows`);
+      if (!rows) return '';
+      return Array.from(rows.querySelectorAll('.dtm-input')).map(inp => inp.value).filter(Boolean).join(' | ');
+    }
+    case 'id': {
+      const num = (document.getElementById(`${id}-num`) || {}).value || '';
+      return field.prefix + num;
+    }
+    case 'id-child': {
+      const prefixEl = document.getElementById(`${id}-prefix`);
+      const parent = prefixEl ? prefixEl.textContent.trim() : '';
+      const num = (document.getElementById(`${id}-num`) || {}).value || '';
+      const validParent = parent && !parent.startsWith('—') ? parent : '';
+      return validParent ? `${validParent}${field.mid}${num}` : '';
+    }
+    case 'gps': {
+      const x = document.getElementById(`${id}-x`).value;
+      const y = document.getElementById(`${id}-y`).value;
+      const z = document.getElementById(`${id}-z`).value;
+      return (x || y || z) ? `${x},${y},${z}` : '';
+    }
+    case 'gps2': {
+      const sLat = document.getElementById(`${id}-s-lat`).value;
+      const sLon = document.getElementById(`${id}-s-lon`).value;
+      const eLat = document.getElementById(`${id}-e-lat`).value;
+      const eLon = document.getElementById(`${id}-e-lon`).value;
+      const hasS = sLat || sLon, hasE = eLat || eLon;
+      if (!hasS && !hasE) return '';
+      return `start:${sLat},${sLon} | end:${eLat},${eLon}`;
+    }
+    default:
+      return document.getElementById(id).value.trim();
+  }
+}
+
+
+// ── SUBMIT (add or update) ────────────────────────────
 function submitEntry(modelName) {
   const fields = MODELS[modelName];
-  const entry  = { _timestamp: new Date().toISOString() };
- 
-  fields.forEach((field, i) => {
-    const id = `field-${slugify(modelName)}-${i}`;
-    if (field.type === 'node') {
-      entry[field.name] = getNodeItems(modelName, field.name);
-    } else if (field.type === 'photo') {
-      entry[field.name] = pendingPhotos[photoKey(modelName, i)] || '';
-    } else if (field.type === 'checkbox') {
-      entry[field.name] = document.getElementById(id).checked ? 'yes' : 'no';
-    } else if (field.type === 'gps') {
-      const lat = document.getElementById(`${id}-lat`).value;
-      const lon = document.getElementById(`${id}-lon`).value;
-      entry[field.name] = lat && lon ? `${lat},${lon}` : '';
-    } else {
-      entry[field.name] = document.getElementById(id).value.trim();
-    }
-  });
- 
+  const editing = editIndex[modelName];
   const entries = loadEntries(modelName);
-  entries.push(entry);
+
+  const entry = (editing != null && entries[editing])
+    ? { ...entries[editing] }
+    : { _timestamp: new Date().toISOString() };
+
+  fields.forEach((field, i) => { entry[field.name] = collectField(field, modelName, i); });
+
+  if (editing != null) {
+    entry._edited = new Date().toISOString();
+    entries[editing] = entry;
+  } else {
+    entries.push(entry);
+  }
   saveEntries(modelName, entries);
+
+  editIndex[modelName] = null;
+  setEditUI(modelName, false);
   resetForm(modelName);
   renderTable(modelName);
+  refreshParentDropdowns();   // new survey units become selectable in Transect
   updateCount();
 }
- 
- 
-// ── RESET ─────────────────────────────────────────────
-function resetForm(modelName) {
+
+
+// ── EDIT / DELETE ENTRIES ─────────────────────────────
+function editEntry(modelName, idx) {
+  const entry = loadEntries(modelName)[idx];
+  if (!entry) return;
+  editIndex[modelName] = idx;
+  loadEntryIntoForm(modelName, entry);
+  setEditUI(modelName, true, idx);
+  switchTab(modelName);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEdit(modelName) {
+  editIndex[modelName] = null;
+  resetForm(modelName);
+  setEditUI(modelName, false);
+}
+
+function deleteEntry(modelName, idx) {
+  if (!confirm('Delete this entry? This cannot be undone.')) return;
+  const entries = loadEntries(modelName);
+  entries.splice(idx, 1);
+  saveEntries(modelName, entries);
+  if (editIndex[modelName] === idx) cancelEdit(modelName);
+  renderTable(modelName);
+  refreshParentDropdowns();
+  updateCount();
+}
+
+function setEditUI(modelName, on, idx) {
+  const slug = slugify(modelName);
+  const submitBtn = document.getElementById(`submit-btn-${slug}`);
+  const cancelBtn = document.getElementById(`cancel-btn-${slug}`);
+  const banner    = document.getElementById(`edit-banner-${slug}`);
+  if (submitBtn) submitBtn.textContent = on ? '✓ Update entry' : '＋ Add entry';
+  if (cancelBtn) cancelBtn.style.display = on ? '' : 'none';
+  if (banner) {
+    banner.style.display = on ? 'block' : 'none';
+    banner.textContent = on ? `Editing entry #${idx + 1} — changes will overwrite it.` : '';
+  }
+}
+
+// Populate the form with an existing entry's values
+function loadEntryIntoForm(modelName, entry) {
+  const slug = slugify(modelName);
   MODELS[modelName].forEach((field, i) => {
-    const id = `field-${slugify(modelName)}-${i}`;
+    const id = `field-${slug}-${i}`;
+    const val = entry[field.name];
+
+    switch (field.type) {
+      case 'node': {
+        setNodeItems(modelName, field.name, Array.isArray(val) ? val.map(o => ({ ...o })) : []);
+        renderNodeList(modelName, i, field);
+        break;
+      }
+      case 'photo': {
+        pendingPhotos[photoKey(modelName, i)] = val || '';
+        const fnEl = document.getElementById(`photo-filename-${slug}-${i}`);
+        if (fnEl) fnEl.textContent = val || '';
+        const btn = document.getElementById(`photo-btn-${slug}-${i}`);
+        if (btn) btn.textContent = val ? '📷 Retake photo' : '📷 Take a photo';
+        break;
+      }
+      case 'checkbox': {
+        const el = document.getElementById(id);
+        if (el) el.checked = (val === 'yes');
+        break;
+      }
+      case 'multiselect': {
+        const box = document.getElementById(id);
+        if (box) {
+          const chosen = String(val || '').split(',').map(s => s.trim());
+          box.querySelectorAll('input[type=checkbox]').forEach(c => { c.checked = chosen.includes(c.value); });
+        }
+        break;
+      }
+      case 'datetime-multi': {
+        const rows = document.getElementById(`${id}-rows`);
+        if (rows) {
+          rows.innerHTML = '';
+          const vals = String(val || '').split('|').map(s => s.trim()).filter(Boolean);
+          if (vals.length === 0) rows.insertAdjacentHTML('beforeend', dtmRowHTML(''));
+          else vals.forEach(v => rows.insertAdjacentHTML('beforeend', dtmRowHTML(v)));
+        }
+        break;
+      }
+      case 'id': {
+        const num = document.getElementById(`${id}-num`);
+        if (num) num.value = String(val || '').replace(field.prefix, '') || '000';
+        break;
+      }
+      case 'id-child': {
+        // val looks like "<parentId>-TR000"
+        const num = document.getElementById(`${id}-num`);
+        const prefixEl = document.getElementById(`${id}-prefix`);
+        const s = String(val || '');
+        const sep = field.mid;
+        const cut = s.lastIndexOf(sep);
+        if (cut >= 0) {
+          if (prefixEl) prefixEl.textContent = s.slice(0, cut) || '— select a survey unit —';
+          if (num) num.value = s.slice(cut + sep.length) || '000';
+        } else {
+          if (num) num.value = '000';
+        }
+        break;
+      }
+      case 'parent-dropdown': {
+        const el = document.getElementById(id);
+        if (el) {
+          // make sure the value is an available option
+          if (val && !Array.from(el.options).some(o => o.value === val)) {
+            el.insertAdjacentHTML('beforeend', `<option value="${val}">${val}</option>`);
+          }
+          el.value = val || '';
+        }
+        break;
+      }
+      case 'gps': {
+        const parts = String(val || '').split(',');
+        const x = document.getElementById(`${id}-x`), y = document.getElementById(`${id}-y`), z = document.getElementById(`${id}-z`);
+        if (x) x.value = parts[0] || '';
+        if (y) y.value = parts[1] || '';
+        if (z) z.value = parts[2] || '';
+        break;
+      }
+      case 'gps2': {
+        const m = String(val || '').match(/start:([^,]*),([^|]*)\|\s*end:([^,]*),(.*)$/);
+        const set = (sfx, v) => { const e = document.getElementById(`${id}-${sfx}`); if (e) e.value = (v || '').trim(); };
+        if (m) { set('s-lat', m[1]); set('s-lon', m[2]); set('e-lat', m[3]); set('e-lon', m[4]); }
+        else { set('s-lat',''); set('s-lon',''); set('e-lat',''); set('e-lon',''); }
+        break;
+      }
+      default: {
+        const el = document.getElementById(id);
+        if (el) el.value = val != null ? val : '';
+      }
+    }
+  });
+}
+
+
+// ── RESET FORM ────────────────────────────────────────
+function resetForm(modelName) {
+  const slug = slugify(modelName);
+  MODELS[modelName].forEach((field, i) => {
+    const id = `field-${slug}-${i}`;
     if (field.type === 'node') {
       setNodeItems(modelName, field.name, []);
       renderNodeList(modelName, i, field);
       field.nodeFields.forEach((sf, si) => {
         if (sf.type === 'branch') {
           Object.entries(sf.branches).forEach(([branchValue, branchFields]) => {
-            const blockEl = document.getElementById(
-              `node-branch-${slugify(modelName)}-${i}-${si}-${slugify(branchValue)}`
-            );
+            const blockEl = document.getElementById(`node-branch-${slug}-${i}-${si}-${slugify(branchValue)}`);
             if (blockEl) blockEl.style.display = 'none';
             branchFields.forEach((bf, bi) => {
-              const bid = `node-branch-field-${slugify(modelName)}-${i}-${si}-${slugify(branchValue)}-${bi}`;
+              const bid = `node-branch-field-${slug}-${i}-${si}-${slugify(branchValue)}-${bi}`;
               if (bf.type === 'photo') {
                 delete pendingBranchPhotos[branchPhotoKey(modelName, i, branchValue, bi)];
                 const fileInput = document.getElementById(bid);
@@ -1126,6 +1586,10 @@ function resetForm(modelName) {
                 if (btn) btn.textContent = '📷 Take a photo';
                 return;
               }
+              if (bf.type === 'gps') {
+                ['-x','-y','-z'].forEach(s => { const e = document.getElementById(`${bid}${s}`); if (e) e.value = ''; });
+                return;
+              }
               const bEl = document.getElementById(bid);
               if (!bEl) return;
               if (bf.type === 'checkbox') bEl.checked = false; else bEl.value = '';
@@ -1133,79 +1597,113 @@ function resetForm(modelName) {
           });
           return;
         }
-        if (sf.type === 'photo') {
-          resetNodePhoto(modelName, i, si);
+        if (sf.type === 'photo') { resetNodePhoto(modelName, i, si); return; }
+        if (sf.type === 'gps') {
+          const nid = `node-field-${slug}-${i}-${si}`;
+          ['-x','-y','-z'].forEach(s => { const e = document.getElementById(`${nid}${s}`); if (e) e.value = ''; });
           return;
         }
-        const el = document.getElementById(`node-field-${slugify(modelName)}-${i}-${si}`);
+        const el = document.getElementById(`node-field-${slug}-${i}-${si}`);
         if (!el) return;
         if (sf.type === 'dependent-dropdown') {
           el.innerHTML = '<option value="">— select a category first —</option>';
-          el.disabled = true;
-          el.style.opacity = '.5';
-        } else {
-          el.value = '';
-        }
+          el.disabled = true; el.style.opacity = '.5';
+        } else if (sf.type === 'checkbox') { el.checked = false; }
+        else { el.value = ''; }
       });
     } else if (field.type === 'photo') {
       delete pendingPhotos[photoKey(modelName, i)];
       const fileInput = document.getElementById(id);
       if (fileInput) fileInput.value = '';
-      const filenameEl = document.getElementById(`photo-filename-${slugify(modelName)}-${i}`);
+      const filenameEl = document.getElementById(`photo-filename-${slug}-${i}`);
       if (filenameEl) filenameEl.textContent = '';
-      const previewEl = document.getElementById(`photo-preview-${slugify(modelName)}-${i}`);
+      const previewEl = document.getElementById(`photo-preview-${slug}-${i}`);
       if (previewEl) { previewEl.style.display = 'none'; previewEl.src = ''; }
-      const btn = document.getElementById(`photo-btn-${slugify(modelName)}-${i}`);
+      const btn = document.getElementById(`photo-btn-${slug}-${i}`);
       if (btn) btn.textContent = '📷 Take a photo';
     } else if (field.type === 'checkbox') {
-      document.getElementById(id).checked = false;
+      const el = document.getElementById(id); if (el) el.checked = false;
+    } else if (field.type === 'multiselect') {
+      const box = document.getElementById(id);
+      if (box) box.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+    } else if (field.type === 'datetime-multi') {
+      const rows = document.getElementById(`${id}-rows`);
+      if (rows) rows.innerHTML = dtmRowHTML('');
+    } else if (field.type === 'clicker') {
+      const el = document.getElementById(id); if (el) el.value = '0';
+    } else if (field.type === 'id') {
+      const num = document.getElementById(`${id}-num`); if (num) num.value = '000';
+    } else if (field.type === 'id-child') {
+      const num = document.getElementById(`${id}-num`); if (num) num.value = '000';
+      const prefixEl = document.getElementById(`${id}-prefix`); if (prefixEl) prefixEl.textContent = '— select a survey unit —';
+    } else if (field.type === 'parent-dropdown') {
+      const el = document.getElementById(id); if (el) el.value = '';
     } else if (field.type === 'gps') {
-      document.getElementById(`${id}-lat`).value = '';
-      document.getElementById(`${id}-lon`).value = '';
-      const btn = document.getElementById(`gps-btn-${slugify(modelName)}-${i}`);
-      if (btn) btn.textContent = '📍 Get';
+      ['-x','-y','-z'].forEach(s => { const e = document.getElementById(`${id}${s}`); if (e) e.value = ''; });
+      const btn = document.getElementById(`gps-btn-${slug}-${i}`); if (btn) btn.textContent = '📍 Get';
+    } else if (field.type === 'gps2') {
+      ['-s-lat','-s-lon','-e-lat','-e-lon'].forEach(s => { const e = document.getElementById(`${id}${s}`); if (e) e.value = ''; });
+      const bs = document.getElementById(`gps-btn-${slug}-${i}-s`); if (bs) bs.textContent = '📍 Start';
+      const be = document.getElementById(`gps-btn-${slug}-${i}-e`); if (be) be.textContent = '📍 End';
     } else {
-      document.getElementById(id).value = '';
+      const el = document.getElementById(id); if (el) el.value = '';
     }
   });
 }
- 
- 
+
+
 // ── RENDER TABLE ──────────────────────────────────────
+function fmtCell(field, v) {
+  if (v == null || v === '') return '';
+  if (field && field.type === 'node') {
+    const n = Array.isArray(v) ? v.length : 0;
+    return n ? `◈ ${n} item${n > 1 ? 's' : ''}` : '—';
+  }
+  return v;
+}
+
 function renderTable(modelName) {
+  const slug = slugify(modelName);
   const entries   = loadEntries(modelName);
-  const container = document.getElementById(`table-${slugify(modelName)}`);
+  const container = document.getElementById(`table-${slug}`);
   if (!container) return;
- 
+
   if (entries.length === 0) {
     container.innerHTML = '<div class="empty-msg">No entries yet.</div>';
     return;
   }
- 
-  const headers  = ['_timestamp', ...MODELS[modelName].map(f => f.name)];
-  const nodeFields = new Set(MODELS[modelName].filter(f => f.type === 'node').map(f => f.name));
-  const headerRow = headers.map(h => `<th>${h}</th>`).join('');
- 
-  const rows = entries.map(e =>
-    `<tr>${headers.map(h => {
-      const v = e[h];
-      if (nodeFields.has(h)) {
-        const n = Array.isArray(v) ? v.length : 0;
-        return `<td class="node-cell">${n ? `◈ ${n} item${n > 1 ? 's' : ''}` : '—'}</td>`;
-      }
-      return `<td>${v ?? ''}</td>`;
-    }).join('')}</tr>`
+
+  const fieldByName = {};
+  MODELS[modelName].forEach(f => fieldByName[f.name] = f);
+  const headers = ['_timestamp', ...MODELS[modelName].map(f => f.name)];
+  const headerRow = `<th>Actions</th>` + headers.map(h => `<th>${h}</th>`).join('');
+
+  const rows = entries.map((e, idx) =>
+    `<tr>
+      <td class="actions-cell">
+        <button class="row-btn row-edit" onclick="editEntry('${escAttr(modelName)}', ${idx})">Edit</button>
+        <button class="row-btn row-del" onclick="deleteEntry('${escAttr(modelName)}', ${idx})">✕</button>
+      </td>
+      ${headers.map(h => {
+        const f = fieldByName[h];
+        if (f && f.type === 'node') {
+          const v = e[h]; const n = Array.isArray(v) ? v.length : 0;
+          return `<td class="node-cell">${n ? `◈ ${n} item${n > 1 ? 's' : ''}` : '—'}</td>`;
+        }
+        return `<td>${fmtCell(f, e[h])}</td>`;
+      }).join('')}
+    </tr>`
   ).join('');
- 
+
   container.innerHTML = `<table><thead><tr>${headerRow}</tr></thead><tbody>${rows}</tbody></table>`;
 }
- 
- 
+
+
 // ── EXPORT CSV ────────────────────────────────────────
 function exportCSV(modelName) {
   const entries = loadEntries(modelName);
   if (entries.length === 0) { alert('No entries to export.'); return; }
- 
+
   const headers  = ['_timestamp', ...MODELS[modelName].map(f => f.name)];
   const escape   = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const cellVal  = (h, e) => {
@@ -1216,7 +1714,7 @@ function exportCSV(modelName) {
     headers.map(escape).join(','),
     ...entries.map(e => headers.map(h => cellVal(h, e)).join(','))
   ];
- 
+
   const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -1225,17 +1723,19 @@ function exportCSV(modelName) {
   a.click();
   URL.revokeObjectURL(url);
 }
- 
- 
-// ── CLEAR ─────────────────────────────────────────────
+
+
+// ── CLEAR ALL ─────────────────────────────────────────
 function clearEntries(modelName) {
   if (!confirm(`Delete ALL entries for "${modelName}"? This cannot be undone.`)) return;
   localStorage.removeItem(storageKey(modelName));
+  cancelEdit(modelName);
   renderTable(modelName);
+  refreshParentDropdowns();
   updateCount();
 }
- 
- 
+
+
 // ── HEADER COUNT ──────────────────────────────────────
 function updateCount() {
   const entries = loadEntries(activeTab);
