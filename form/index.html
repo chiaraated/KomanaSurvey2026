@@ -353,6 +353,17 @@
     color: var(--muted);
     font-style: italic;
   }
+  /* stop mini-headers */
+  .stop-header {
+    font-size: .72rem;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: bold;
+    margin: 16px 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--accent-lt);
+  }
   .node-branch {
     border-left: 2px solid var(--node-border);
     padding-left: 10px;
@@ -476,8 +487,10 @@ const SITE_TYPES = [
 ];
 
 // Build the 5 stop counters (each stop: Ceramics + Building materials)
+// Each stop gets a mini-header showing its distance along the transect.
 const STOP_FIELDS = [];
 for (let s = 1; s <= 5; s++) {
+  STOP_FIELDS.push({ name: `Stop ${s} — ${s * 10} m`,        type: "header" });
   STOP_FIELDS.push({ name: `Stop ${s} – Ceramics`,          type: "clicker" });
   STOP_FIELDS.push({ name: `Stop ${s} – Building materials`, type: "clicker" });
 }
@@ -514,6 +527,7 @@ const MODELS = {
     { name: "Historical coverage",          type: "multiselect", options: HISTORICAL_PERIODS },
     { name: "Finds / Architectural features / Epigraphy", type: "text",
       placeholder: "Links to find/architecture entries (added later)" },
+    { name: "Related Landscape Unit",       type: "text" },
     { name: "Comments / Description",       type: "text" },
     { name: "Photographs",                  type: "photo" },
   ],
@@ -541,74 +555,79 @@ const MODELS = {
     { name: "Finds (collected)",                  type: "text",
       placeholder: "Cross-reference to collected-find entries (added later)" },
 
-    // ── ARCHITECTURE & EPIGRAPHY NODE ─────────────────
-    // Kept from the original model. Pick a category, get that type's full sub-form.
-    { name: "Architecture & Epigraphy", type: "node",
-      hint: "Add one entry per architectural feature or inscription. Choose a category to see its full form.",
+    // ── ARCHITECTURAL FEATURES NODE (new model) ───────
+    // Record on field first, complete later. Entry ID inherits the
+    // transect's parent Survey unit (SU000) + an editable -ARCH number.
+    { name: "Architectural Features", type: "node",
+      hint: "Add one entry per architectural feature. Record on field first, complete later.",
       nodeFields: [
-        { name: "Category", type: "dropdown",
-          options: ["Architectural Feature", "Epigraphic Material"],
-          triggers: "Details"
-        },
+        { name: "Author", type: "dropdown", options: AUTHORS },
+        { name: "Date", type: "datetime" },
+        { name: "Entry ID", type: "id-arch", mid: "-ARCH" },
+        { name: "Coordinates", type: "gps" },
+        { name: "Orientation", type: "text" },
+        { name: "Type of building", type: "dropdown",
+          options: ["Unidentified", "Church", "Mosque", "Baths", "House"] },
+        { name: "Type of feature(s) found", type: "multiselect",
+          options: [
+            "Column", "Capital", "Wall (standing)", "Pavement / Floor",
+            "Arch / Vault", "Doorway / Threshold", "Window / Niche",
+            "Mosaic", "Fresco / Wall painting", "Foundation"
+          ]},
+        { name: "Dimensions", type: "text", placeholder: "Height × width × thickness" },
+        { name: "Materials", type: "multiselect",
+          options: ["Limestone", "Marble", "Bricks"] },
+        { name: "Epigraphy?", type: "checkbox" },
+        { name: "Related finds", type: "text", placeholder: "Linked find IDs / commentary" },
+        { name: "Observations", type: "text" },
+        { name: "Link to parent transect / survey unit", type: "text" },
+      ]
+    },
+
+    // ── EPIGRAPHIC MATERIAL NODE (kept separately) ────
+    { name: "Epigraphic Material", type: "node",
+      hint: "Add one entry per inscription.",
+      nodeFields: [
         { name: "ID Number", type: "text" },
-        { name: "Details", type: "branch", dependsOn: "Category",
-          branches: {
-            "Architectural Feature": [
-              { name: "Type", type: "dropdown", options: [
-                  "Column", "Capital", "Wall (standing)", "Pavement / Floor",
-                  "Arch / Vault", "Doorway / Threshold", "Window / Niche",
-                  "Mosaic", "Fresco / Wall painting", "Foundation", "Posthole"
-              ]},
-              { name: "Coordinates",            type: "gps" },
-              { name: "Dimensions", type: "text" },
-              { name: "Materials", type: "text" },
-              { name: "Epigraphy?", type: "checkbox" },
-              { name: "Observations", type: "text" },
-              { name: "Photo", type: "photo" },
-            ],
-            "Epigraphic Material": [
-              { name: "Type", type: "dropdown", options: [
-                  "Funerary inscription", "Building inscription", "Votive inscription",
-                  "Honorary inscription", "Boundary marker", "Graffiti",
-                  "Fragment (unidentified)"
-              ]},
-              { name: "Language of the inscription", type: "dropdown", options: [
-                  "Turkish", "Greek (Ancient, Koine, Byzantine)", "Latin", "Phrygian", "Armenian (Classical)",
-                  "Thracian / Dacian (fragmentary)", "Phoenician / Punic", "Aramaic", "Hebrew (Ancient / Biblical)",
-                  "Arabic (Early Islamic, Kufic)", "Hittite", "Luwian / Hieroglyphic Luwian",
-                  "Lycian / Carian / Pisidian", "Urartian", "Georgian (Old Asomtavruli)", "Old Persian (Cuneiform)",
-                  "Elamite", "Sumerian", "Etruscan"
-              ]},
-              { name: "Writing Surface", type: "dropdown", options: [
-                  "marble", "limestone", "basalt / andesite", "sandstone", "stone",
-                  "bronze", "lead", "gold / silver", "clay", "ceramics", "terracotta",
-                  "wood / wax", "papyrus / parchment", "composite"
-              ]},
-              { name: "Shape", type: "dropdown", options: [
-                  "Rectangular / Square", "Circular / Disk-shaped", "Oval / Elliptical", "Triangular",
-                  "Polygonal / Multisided", "Globular (amphora, pithos)", "Conical (cups / small jars)",
-                  "Biconical", "Carinated (sharp-angled body)", "Columnar / Pillar-like",
-                  "Slab-like (flat plates, plaques)", "Domed / Vaulted", "Zoomorphic (animal-shaped)",
-                  "Anthropomorphic (human-shaped)", "Symbolic (cross, star, rosette)"
-              ]},
-              { name: "Coordinates",            type: "gps" },
-              { name: "Dimensions", type: "text" },
-              { name: "Materials", type: "text" },
-              { name: "Techniques", type: "dropdown", options: [
-                  "Relief carving (bas-relief, high-relief)", "Incised carving (linear engravings)",
-                  "Point chiseling / Pick dressing", "Polished finishing / Surface smoothing",
-                  "Rock-cut carving (architectural or inscriptions)", "Whittling / Linear carving",
-                  "Chip carving (geometric patterns)", "Engraving (fine incised lines)",
-                  "Punch-dot or Stipple engraving", "Scrimshaw-like fine carving",
-                  "Openwork / Pierced carving", "Incised decoration (pre-firing)",
-                  "Stamp-impressed decoration", "Barbotine / Applied relief decoration",
-                  "Inlayed carving (stone or metal inlays)"
-              ]},
-              { name: "Observations", type: "text" },
-              { name: "Photo", type: "photo" },
-            ],
-          }
-        },
+        { name: "Type", type: "dropdown", options: [
+            "Funerary inscription", "Building inscription", "Votive inscription",
+            "Honorary inscription", "Boundary marker", "Graffiti",
+            "Fragment (unidentified)"
+        ]},
+        { name: "Language of the inscription", type: "dropdown", options: [
+            "Turkish", "Greek (Ancient, Koine, Byzantine)", "Latin", "Phrygian", "Armenian (Classical)",
+            "Thracian / Dacian (fragmentary)", "Phoenician / Punic", "Aramaic", "Hebrew (Ancient / Biblical)",
+            "Arabic (Early Islamic, Kufic)", "Hittite", "Luwian / Hieroglyphic Luwian",
+            "Lycian / Carian / Pisidian", "Urartian", "Georgian (Old Asomtavruli)", "Old Persian (Cuneiform)",
+            "Elamite", "Sumerian", "Etruscan"
+        ]},
+        { name: "Writing Surface", type: "dropdown", options: [
+            "marble", "limestone", "basalt / andesite", "sandstone", "stone",
+            "bronze", "lead", "gold / silver", "clay", "ceramics", "terracotta",
+            "wood / wax", "papyrus / parchment", "composite"
+        ]},
+        { name: "Shape", type: "dropdown", options: [
+            "Rectangular / Square", "Circular / Disk-shaped", "Oval / Elliptical", "Triangular",
+            "Polygonal / Multisided", "Globular (amphora, pithos)", "Conical (cups / small jars)",
+            "Biconical", "Carinated (sharp-angled body)", "Columnar / Pillar-like",
+            "Slab-like (flat plates, plaques)", "Domed / Vaulted", "Zoomorphic (animal-shaped)",
+            "Anthropomorphic (human-shaped)", "Symbolic (cross, star, rosette)"
+        ]},
+        { name: "Coordinates", type: "gps" },
+        { name: "Dimensions", type: "text" },
+        { name: "Materials", type: "text" },
+        { name: "Techniques", type: "dropdown", options: [
+            "Relief carving (bas-relief, high-relief)", "Incised carving (linear engravings)",
+            "Point chiseling / Pick dressing", "Polished finishing / Surface smoothing",
+            "Rock-cut carving (architectural or inscriptions)", "Whittling / Linear carving",
+            "Chip carving (geometric patterns)", "Engraving (fine incised lines)",
+            "Punch-dot or Stipple engraving", "Scrimshaw-like fine carving",
+            "Openwork / Pierced carving", "Incised decoration (pre-firing)",
+            "Stamp-impressed decoration", "Barbotine / Applied relief decoration",
+            "Inlayed carving (stone or metal inlays)"
+        ]},
+        { name: "Observations", type: "text" },
+        { name: "Photo", type: "photo" },
       ]
     },
     // ─────────────────────────────────────────────────
@@ -855,6 +874,8 @@ function buildField(field, modelName, i) {
   const ph = field.placeholder || field.name;
 
   switch (field.type) {
+    case 'header':
+      return `<div class="stop-header">${field.name}</div>`;
     case 'text':
       return `<div class="field-group">${label}<input id="${id}" type="text" placeholder="${ph}">${hint}</div>`;
     case 'number':
@@ -1002,7 +1023,29 @@ function onParentChange(modelName, parentFieldIndex) {
       const prefixEl = document.getElementById(`field-${slug}-${i}-prefix`);
       if (prefixEl) prefixEl.textContent = parentVal || '— select a survey unit —';
     }
+    // update id-arch prefixes inside node sub-forms (they inherit the same parent)
+    if (field.type === 'node') {
+      field.nodeFields.forEach((sf, si) => {
+        if (sf.type === 'id-arch') {
+          const pe = document.getElementById(`node-field-${slug}-${i}-${si}-prefix`);
+          if (pe) pe.textContent = parentVal || '— select survey unit (in Transect) —';
+        }
+      });
+    }
   });
+}
+
+// Return the current parent Survey-unit value selected at the top level of a model
+function getParentSUValue(modelName) {
+  const slug = slugify(modelName);
+  const fields = MODELS[modelName];
+  for (let i = 0; i < fields.length; i++) {
+    if (fields[i].type === 'parent-dropdown') {
+      const el = document.getElementById(`field-${slug}-${i}`);
+      return el ? el.value : '';
+    }
+  }
+  return '';
 }
 
 
@@ -1052,6 +1095,20 @@ function buildSubField(sf, modelName, fieldIndex, si) {
   }
   if (sf.type === 'branch') {
     return buildBranchBlock(sf, modelName, fieldIndex, si);
+  }
+  if (sf.type === 'datetime') return `<div class="field-group">${lbl}<input id="${id}" type="datetime-local"></div>`;
+  if (sf.type === 'multiselect') {
+    const opts = sf.options.map(o => `<label class="ms-opt"><input type="checkbox" value="${o}"> ${o}</label>`).join('');
+    return `<div class="field-group">${lbl}<div class="multiselect-box" id="${id}">${opts}</div></div>`;
+  }
+  if (sf.type === 'id-arch') {
+    return `<div class="field-group">${lbl}
+      <div class="id-row">
+        <span class="id-prefix" id="${id}-prefix">— select survey unit (in Transect) —</span>
+        <span class="id-prefix" style="background:var(--bg)">${sf.mid}</span>
+        <input id="${id}-num" class="id-num" type="text" inputmode="numeric" value="000" maxlength="6">
+      </div>
+      <span class="id-hint">SU part inherited from the transect's Survey unit; edit only the number.</span></div>`;
   }
   if (sf.type === 'number') return `<div class="field-group">${lbl}<input id="${id}" type="number" placeholder="0"></div>`;
   if (sf.type === 'year')   return `<div class="field-group">${lbl}<input id="${id}" type="number" min="1000" max="2100" placeholder="YYYY"></div>`;
@@ -1230,6 +1287,22 @@ function addNodeItem(modelName, fieldIndex) {
       return;
     }
 
+    if (sf.type === 'id-arch') {
+      const base = `node-field-${slug}-${fieldIndex}-${si}`;
+      const parent = getParentSUValue(modelName);
+      const num = (document.getElementById(`${base}-num`) || {}).value || '';
+      item[sf.name] = parent ? `${parent}${sf.mid}${num}` : (num ? `${sf.mid}${num}` : '');
+      const numEl = document.getElementById(`${base}-num`); if (numEl) numEl.value = '000';
+      return;
+    }
+
+    if (sf.type === 'multiselect') {
+      const box = document.getElementById(`node-field-${slug}-${fieldIndex}-${si}`);
+      item[sf.name] = box ? Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value).join(', ') : '';
+      if (box) box.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+      return;
+    }
+
     const el = document.getElementById(`node-field-${slug}-${fieldIndex}-${si}`);
     if (!el) return;
     item[sf.name] = sf.type === 'checkbox' ? (el.checked ? 'yes' : 'no') : el.value.trim();
@@ -1400,7 +1473,10 @@ function submitEntry(modelName) {
     ? { ...entries[editing] }
     : { _timestamp: new Date().toISOString() };
 
-  fields.forEach((field, i) => { entry[field.name] = collectField(field, modelName, i); });
+  fields.forEach((field, i) => {
+    if (field.type === 'header') return;
+    entry[field.name] = collectField(field, modelName, i);
+  });
 
   if (editing != null) {
     entry._edited = new Date().toISOString();
@@ -1603,6 +1679,18 @@ function resetForm(modelName) {
           ['-x','-y','-z'].forEach(s => { const e = document.getElementById(`${nid}${s}`); if (e) e.value = ''; });
           return;
         }
+        if (sf.type === 'id-arch') {
+          const nid = `node-field-${slug}-${i}-${si}`;
+          const numEl = document.getElementById(`${nid}-num`); if (numEl) numEl.value = '000';
+          const pe = document.getElementById(`${nid}-prefix`);
+          if (pe) pe.textContent = getParentSUValue(modelName) || '— select survey unit (in Transect) —';
+          return;
+        }
+        if (sf.type === 'multiselect') {
+          const box = document.getElementById(`node-field-${slug}-${i}-${si}`);
+          if (box) box.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+          return;
+        }
         const el = document.getElementById(`node-field-${slug}-${i}-${si}`);
         if (!el) return;
         if (sf.type === 'dependent-dropdown') {
@@ -1675,7 +1763,7 @@ function renderTable(modelName) {
 
   const fieldByName = {};
   MODELS[modelName].forEach(f => fieldByName[f.name] = f);
-  const headers = ['_timestamp', ...MODELS[modelName].map(f => f.name)];
+  const headers = ['_timestamp', ...MODELS[modelName].filter(f => f.type !== 'header').map(f => f.name)];
   const headerRow = `<th>Actions</th>` + headers.map(h => `<th>${h}</th>`).join('');
 
   const rows = entries.map((e, idx) =>
@@ -1704,7 +1792,7 @@ function exportCSV(modelName) {
   const entries = loadEntries(modelName);
   if (entries.length === 0) { alert('No entries to export.'); return; }
 
-  const headers  = ['_timestamp', ...MODELS[modelName].map(f => f.name)];
+  const headers  = ['_timestamp', ...MODELS[modelName].filter(f => f.type !== 'header').map(f => f.name)];
   const escape   = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const cellVal  = (h, e) => {
     const v = e[h];
