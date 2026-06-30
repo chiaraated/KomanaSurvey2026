@@ -467,7 +467,7 @@
 // ═══════════════════════════════════════════════════════
 //  DATA MODELS
 // ═══════════════════════════════════════════════════════
-const AUTHORS = ["D. Burcu Erciyas", "Maxime Durocher"];
+const AUTHORS = ["Burcu Erciyas", "Maxime Durocher"]; // ← replace/extend with real team names
 
 // Building-material vocabulary (used in counters / hints)
 const BUILDING_MATERIALS = [
@@ -511,9 +511,9 @@ const MODELS = {
     { name: "Type of Survey Unit",          type: "dropdown",
       options: ["Modern field", "Hillslope", "Forest"] },
     { name: "Type of landscape",            type: "dropdown",
-      options: ["Field", "Mountain", "Slope"] },
+      options: ["Valley bottom", "Plain", "Plateau", "Ridge", "Hillslope", "Gorge", "Terrace", "Depression"] },
     { name: "Type of soil",                 type: "dropdown",
-      options: ["Sandy", "Clay", "Rocky", "Loam"] },
+      options: ["Clay", "Silt", "Sand", "Loam", "Stony / Rocky", "Ploughed Topsoil", "Highly Eroded"] },
     { name: "Surface information",          type: "dropdown",
       options: ["Cultivated", "Untouched", "Plowed"] },
     { name: "Vegetation",                   type: "text" },
@@ -527,7 +527,7 @@ const MODELS = {
     { name: "Historical coverage",          type: "multiselect", options: HISTORICAL_PERIODS },
     { name: "Finds / Architectural features / Epigraphy", type: "text",
       placeholder: "Links to find/architecture entries (added later)" },
-    { name: "Related Landscape Unit",       type: "text" },
+    { name: "Related landscape unit",       type: "text" },
     { name: "Comments / Description",       type: "text" },
     { name: "Photographs",                  type: "photo" },
   ],
@@ -535,10 +535,9 @@ const MODELS = {
   "Transect": [
     { name: "Author / Fieldwalker",   type: "dropdown", options: AUTHORS },
     { name: "Date",                   type: "datetime" },
-    // Parent survey unit chosen here; its ID feeds the Entry ID below.
-    { name: "Survey unit",            type: "parent-dropdown", sourceModel: "Survey Unit" },
-    // SU000 inherited from the chosen Survey unit; you edit only the TR000.
-    { name: "Entry ID",               type: "id-child", parentField: "Survey unit", mid: "-TR" },
+    // Entry ID typed by hand: fixed stem, you edit the SU number and the TR number.
+    { name: "Entry ID",               type: "id-dual", stem: "KARP-S26-CMG-SU", mid: "-TR" },
+    { name: "Survey unit",            type: "text", placeholder: "Parent survey unit ID" },
     { name: "Dimensions",             type: "text", placeholder: "Length (width assumed 1 m)" },
     { name: "Coordinates (start / end)", type: "gps2" },
     { name: "Adjacent transects",     type: "text", placeholder: "ID names of adjacent transects" },
@@ -581,7 +580,6 @@ const MODELS = {
         { name: "Related finds", type: "text", placeholder: "Linked find IDs / commentary" },
         { name: "Observations", type: "text" },
         { name: "Link to parent transect / survey unit", type: "text" },
-        { name: "Photo", type: "photo" },
       ]
     },
 
@@ -830,6 +828,7 @@ models.forEach(name => {
 });
 
 refreshParentDropdowns();
+models.forEach(m => onTransectSUChange(m));   // initialise ARCH id prefixes
 updateCount();
 
 function switchTab(name) {
@@ -930,6 +929,17 @@ function buildField(field, modelName, i) {
         </div>
         <span class="id-hint">The survey-unit part is inherited; you edit only the transect number.</span>${hint}</div>`;
     }
+    case 'id-dual': {
+      return `<div class="field-group">${label}
+        <div class="id-row">
+          <span class="id-prefix">${field.stem}</span>
+          <input id="${id}-su" class="id-num" type="text" inputmode="numeric" value="000" maxlength="6"
+            oninput="onTransectSUChange('${escAttr(modelName)}')">
+          <span class="id-prefix" style="background:var(--bg)">${field.mid}</span>
+          <input id="${id}-tr" class="id-num" type="text" inputmode="numeric" value="000" maxlength="6">
+        </div>
+        <span class="id-hint">Stem is fixed — type the SU number and the transect number by hand.</span>${hint}</div>`;
+    }
     case 'parent-dropdown':
       return `<div class="field-group">${label}
         <select id="${id}" onchange="onParentChange('${escAttr(modelName)}', ${i})">
@@ -938,21 +948,21 @@ function buildField(field, modelName, i) {
     case 'gps':
       return `<div class="field-group">${label}
         <div class="gps-row">
-          <input id="${id}-x" type="text" placeholder="x (lat)" readonly>
-          <input id="${id}-y" type="text" placeholder="y (lon)" readonly>
-          <input id="${id}-z" type="text" placeholder="z (alt)" readonly>
+          <input id="${id}-x" type="text" placeholder="x (lat)">
+          <input id="${id}-y" type="text" placeholder="y (lon)">
+          <input id="${id}-z" type="text" placeholder="z (alt)">
           <button type="button" class="gps-btn" id="gps-btn-${slug}-${i}" onclick="getGPS('${escAttr(modelName)}', ${i})">📍 Get</button>
         </div>${hint}</div>`;
     case 'gps2':
       return `<div class="field-group">${label}
         <div class="gps-row">
-          <input id="${id}-s-lat" type="text" placeholder="Start lat" readonly>
-          <input id="${id}-s-lon" type="text" placeholder="Start lon" readonly>
+          <input id="${id}-s-lat" type="text" placeholder="Start lat">
+          <input id="${id}-s-lon" type="text" placeholder="Start lon">
           <button type="button" class="gps-btn" id="gps-btn-${slug}-${i}-s" onclick="getGPS2('${escAttr(modelName)}', ${i}, 's')">📍 Start</button>
         </div>
         <div class="gps-row">
-          <input id="${id}-e-lat" type="text" placeholder="End lat" readonly>
-          <input id="${id}-e-lon" type="text" placeholder="End lon" readonly>
+          <input id="${id}-e-lat" type="text" placeholder="End lat">
+          <input id="${id}-e-lon" type="text" placeholder="End lon">
           <button type="button" class="gps-btn" id="gps-btn-${slug}-${i}-e" onclick="getGPS2('${escAttr(modelName)}', ${i}, 'e')">📍 End</button>
         </div>${hint}</div>`;
     case 'node':
@@ -1036,17 +1046,38 @@ function onParentChange(modelName, parentFieldIndex) {
   });
 }
 
-// Return the current parent Survey-unit value selected at the top level of a model
+// Return the current parent Survey-unit ID for this model.
+// Derived from the manually-typed SU number in the dual Entry ID, or a parent dropdown.
 function getParentSUValue(modelName) {
   const slug = slugify(modelName);
   const fields = MODELS[modelName];
   for (let i = 0; i < fields.length; i++) {
+    if (fields[i].type === 'id-dual') {
+      const suEl = document.getElementById(`field-${slug}-${i}-su`);
+      const num = suEl ? suEl.value.trim() : '';
+      return num ? `${fields[i].stem}${num}` : '';
+    }
     if (fields[i].type === 'parent-dropdown') {
       const el = document.getElementById(`field-${slug}-${i}`);
       return el ? el.value : '';
     }
   }
   return '';
+}
+
+// When the SU number in the Transect Entry ID changes, update ARCH id prefixes.
+function onTransectSUChange(modelName) {
+  const slug = slugify(modelName);
+  const su = getParentSUValue(modelName);
+  MODELS[modelName].forEach((field, i) => {
+    if (field.type !== 'node') return;
+    field.nodeFields.forEach((sf, si) => {
+      if (sf.type === 'id-arch') {
+        const pe = document.getElementById(`node-field-${slug}-${i}-${si}-prefix`);
+        if (pe) pe.textContent = su || '— enter SU number above —';
+      }
+    });
+  });
 }
 
 
@@ -1117,9 +1148,9 @@ function buildSubField(sf, modelName, fieldIndex, si) {
   if (sf.type === 'gps') {
     return `<div class="field-group">${lbl}
       <div class="gps-row">
-        <input id="${id}-x" type="text" placeholder="x (lat)" readonly>
-        <input id="${id}-y" type="text" placeholder="y (lon)" readonly>
-        <input id="${id}-z" type="text" placeholder="z (alt)" readonly>
+        <input id="${id}-x" type="text" placeholder="x (lat)">
+        <input id="${id}-y" type="text" placeholder="y (lon)">
+        <input id="${id}-z" type="text" placeholder="z (alt)">
         <button type="button" class="gps-btn" onclick="getNodeGPS('${id}')">📍 Get</button>
       </div></div>`;
   }
@@ -1170,9 +1201,9 @@ function buildBranchSubField(bf, modelName, fieldIndex, si, branchValue, bi) {
   if (bf.type === 'gps') {
     return `<div class="field-group">${lbl}
       <div class="gps-row">
-        <input id="${id}-x" type="text" placeholder="x (lat)" readonly>
-        <input id="${id}-y" type="text" placeholder="y (lon)" readonly>
-        <input id="${id}-z" type="text" placeholder="z (alt)" readonly>
+        <input id="${id}-x" type="text" placeholder="x (lat)">
+        <input id="${id}-y" type="text" placeholder="y (lon)">
+        <input id="${id}-z" type="text" placeholder="z (alt)">
         <button type="button" class="gps-btn" onclick="getNodeGPS('${id}')">📍 Get</button>
       </div></div>`;
   }
@@ -1443,6 +1474,11 @@ function collectField(field, modelName, i) {
       const validParent = parent && !parent.startsWith('—') ? parent : '';
       return validParent ? `${validParent}${field.mid}${num}` : '';
     }
+    case 'id-dual': {
+      const su = (document.getElementById(`${id}-su`) || {}).value || '';
+      const tr = (document.getElementById(`${id}-tr`) || {}).value || '';
+      return `${field.stem}${su}${field.mid}${tr}`;
+    }
     case 'gps': {
       const x = document.getElementById(`${id}-x`).value;
       const y = document.getElementById(`${id}-y`).value;
@@ -1601,6 +1637,22 @@ function loadEntryIntoForm(modelName, entry) {
         }
         break;
       }
+      case 'id-dual': {
+        // val looks like "KARP-S26-CMG-SU007-TR012"
+        const suEl = document.getElementById(`${id}-su`);
+        const trEl = document.getElementById(`${id}-tr`);
+        let s = String(val || '');
+        if (s.startsWith(field.stem)) s = s.slice(field.stem.length);
+        const cut = s.lastIndexOf(field.mid);
+        if (cut >= 0) {
+          if (suEl) suEl.value = s.slice(0, cut) || '000';
+          if (trEl) trEl.value = s.slice(cut + field.mid.length) || '000';
+        } else {
+          if (suEl) suEl.value = s || '000';
+          if (trEl) trEl.value = '000';
+        }
+        break;
+      }
       case 'parent-dropdown': {
         const el = document.getElementById(id);
         if (el) {
@@ -1633,6 +1685,7 @@ function loadEntryIntoForm(modelName, entry) {
       }
     }
   });
+  onTransectSUChange(modelName);   // sync any ARCH id prefixes to the loaded SU number
 }
 
 
@@ -1725,6 +1778,9 @@ function resetForm(modelName) {
     } else if (field.type === 'id-child') {
       const num = document.getElementById(`${id}-num`); if (num) num.value = '000';
       const prefixEl = document.getElementById(`${id}-prefix`); if (prefixEl) prefixEl.textContent = '— select a survey unit —';
+    } else if (field.type === 'id-dual') {
+      const suEl = document.getElementById(`${id}-su`); if (suEl) suEl.value = '000';
+      const trEl = document.getElementById(`${id}-tr`); if (trEl) trEl.value = '000';
     } else if (field.type === 'parent-dropdown') {
       const el = document.getElementById(id); if (el) el.value = '';
     } else if (field.type === 'gps') {
