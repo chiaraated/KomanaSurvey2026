@@ -467,7 +467,9 @@
 // ═══════════════════════════════════════════════════════
 //  DATA MODELS
 // ═══════════════════════════════════════════════════════
-const AUTHORS = ["Burcu Erciyas", "Maxime Durocher"]; // ← replace/extend with real team names
+const AUTHORS = ["D. Burcu Erciyas", "Maxime Durocher", "Bora Bakrıyanık", 
+"Özgen Sütcü", "Selin Çergel", "Kat Erciyas", "Ezgi Sevimli", "Chiara Tedesco", 
+"Pierre Benoit", "Yunus Emre Karasu", "Catherine Theresa Keane"];
 
 // Building-material vocabulary (used in counters / hints)
 const BUILDING_MATERIALS = [
@@ -627,10 +629,48 @@ const MODELS = {
         ]},
         { name: "Observations", type: "text" },
         { name: "Photo", type: "photo" },
-      ]
+      ],
     },
-    // ─────────────────────────────────────────────────
+  ],
 
+  "Landscape Character Area Base Profile": [
+    { name: "Author / Fieldwalker",   type: "dropdown", options: AUTHORS },
+    { name: "Date (First Creation of the Entry)",                   type: "datetime" },
+    // Entry ID typed by hand: fixed stem, you edit the SU number and the TR number.
+    { name: "Entry ID",               type: "id-dual", stem: "KARP-S26-CMG-LU"},
+    { name: "Related Administrative Unit",            type: "text", placeholder: "Parent AU ID" },
+    { name: "Related Survey Unit",            type: "text", placeholder: "Parent SU ID" },
+    { name: "Area Definition",             type: "text", placeholder: "--" },
+    { name: "Coordinates (start / end)", type: "gps2" },
+    { name: "Place — Natural", type: "header" },
+    { name: "Geology",            type: "dropdown", options: ["Limestone", "Basalt", "Alluvium", "Sandstone", "Tuff", "Metamorphic", "Other"]},
+    { name: "Landform",             type: "dropdown", options: ["Valley bottom", "Plain", "Plateau", "Ridge", "Hillslope", "Gorge", "Terrace", "Depression"]},
+    { name: "Air & Climate",             type: "dropdown", options: ["Arid", "Semi-arid", "Mediterranean", "Continental", "Humid", "Exposed/Windy", "Sheltered"]},
+    { name: "Type of soil",             type: "dropdown", options: ["Clay", "Silt", "Sand", "Loam", "Stony/Rocky", "Ploughed Topsoil", "Highly Eroded"]},
+    { name: "Flora & Fauna",             type: "text"},
+    { name: "Comments (Place — Natural)",             type: "text"},
+    { name: "Place — Cultural / Social", type: "header" },
+    { name: "Land Use",            type: "dropdown", options: ["Arable Farming", "Pasture/Grazing", "Orchards/Vineyards", "Forestry", "Wasteland", "Urban/Built-up"]},
+    { name: "Settlement",             type: "dropdown", options: ["Nucleated", "Dispersed/Hamlets", "Urban Fringe", "Archaeological Feature", "Abandoned", "None"]},
+    { name: "Enclosure",             type: "dropdown", options: ["Stone Walls", "Hedgerows", "Fences", "Ditches", "Agricultural Terracing", "Open/None"]},
+    { name: "Comments (Place — Cultural / Social)",             type: "text"},
+    { name: "People — Aesthetic (Sight & Senses)", type: "header" },
+    { name: "Colour",            type: "dropdown", options: ["Monochromatic Earthy", "Vibrant/Multi", "Muted Greens", "Straw/Ochre", "Dark/Shadowed"]},
+    { name: "Texture",             type: "dropdown", options: ["Coarse/Rough", "Smooth/Uniform", "Fine/Granular", "Varied"]},
+    { name: "Pattern",             type: "dropdown", options: ["Regular/Geometric", "Irregular/Organic", "Linear", "Patchwork", "Chaotic/Fragmentation"]},
+    { name: "Form",            type: "dropdown", options: ["Flat", "Rolling", "Sloping", "Steep/Vertical", "Rugged/Jagged", "Complex"]},
+    { name: "Sounds",             type: "dropdown", options: ["Silent", "Natural (Wind/Water/Fauna)", "Anthropic (Traffic/Machinery)", "Distant Murmur"]},
+    { name: "Smells",             type: "dropdown", options: ["Natural/Vegetation", "Earthy/Damp", "Smoke/Burning", "Agricultural/Manure", "None"]},
+    { name: "Touch / Feel",            type: "dropdown", options: ["Exposed/Chilly", "Sheltered/Warm", "Humid/Sticky", "Dry/Dusty", "High Wind"]},
+    { name: "Comments (Aesthetic Sight)",             type: "text"},
+    { name: "People — Perceptual", type: "header" },
+    { name: "Memories",            type: "dropdown", options: ["Historic/Ancient Resonance", "Living Local Memory", "Abandoned/Ruined Feel", "Modern intervention"]},
+    { name: "Associations",             type: "dropdown", options: ["Sacred/Ritual", "Conflict/Battleground", "Historical Trade/Travel Route", "Agricultural Heritage", "None"]},
+    { name: "Preferences",             type: "dropdown", options: ["High Scenic Value", "Picturesque", "Industrialized/Degraded", "Ordinary/Commonplace"]},
+    { name: "Comments (Perceptual)",             type: "text"},
+
+
+    
     { name: "Photographs",  type: "photo" },
   ],
 };
