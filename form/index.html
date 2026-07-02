@@ -10,7 +10,7 @@
     --bg:        #f4f1eb;
     --surface:   #ffffff;
     --border:    #d6d0c4;
-    --accent:    #967f39;
+    --accent:    #221a01;
     --accent-lt: #f5f0e0;
     --text:      #1a1a1a;
     --muted:     #7a7060;
@@ -19,6 +19,26 @@
     --node-border:#e6be21;
     --radius:    10px;
     --font:      'DM Mono', 'Courier New', monospace;
+  }
+
+  /* ── DARK MODE PALETTE ────────────────────────────── */
+  body.dark-mode {
+    --bg:        #1c1a15;
+    --surface:   #262319;
+    --border:    #3d3728;
+    --accent:    #d9b35c;
+    --accent-lt: #332c1c;
+    --text:      #efe9db;
+    --muted:     #a89a7f;
+    --danger:    #e0685a;
+    --node-bg:   #241f17;
+    --node-border:#e6c34a;
+  }
+  body { transition: background-color .2s, color .2s; }
+  .form-card, .entries-card, .node-section, .node-subform,
+  .field-group input, .field-group select, .field-group textarea,
+  th, td, .id-row {
+    transition: background-color .2s, color .2s, border-color .2s;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -101,10 +121,11 @@
     gap: 5px;
   }
   .field-group label {
-    font-size: .75rem;
-    letter-spacing: .05em;
+    font-size: .95rem;
+    font-weight: 700;
+    letter-spacing: .03em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--accent);
   }
   .field-group input,
   .field-group select,
@@ -250,6 +271,24 @@
   .btn-primary { background: var(--accent); color: #fff; flex: 1; min-width: 150px; }
   .btn-export  { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
   .btn-clear   { background: var(--bg); border: 1px solid var(--danger);  color: var(--danger); }
+
+  /* ── THEME TOGGLE ─────────────────────────────────── */
+  .theme-toggle-btn {
+    flex-shrink: 0;
+    padding: 7px 12px;
+    font-family: var(--font);
+    font-size: .72rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.5);
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color .15s;
+  }
+  .theme-toggle-btn:active { background: rgba(255,255,255,.3); }
   .editing-banner {
     display: none;
     background: var(--accent-lt);
@@ -457,13 +496,41 @@
 
 <header>
   <h1>Komana / Yeşilırmak River Valley Archaeological Survey</h1>
-  <span id="entry-count" style="font-size:.8rem;opacity:.8"></span>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span id="entry-count" style="font-size:.8rem;opacity:.8"></span>
+    <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Dark</button>
+  </div>
 </header>
 
 <div id="tab-bar"></div>
 <main id="main"></main>
 
 <script>
+// ═══════════════════════════════════════════════════════
+//  THEME (light / dark mode)
+// ═══════════════════════════════════════════════════════
+const THEME_KEY = 'fieldform_ui_theme';
+
+function applyTheme(theme) {
+  document.body.classList.toggle('dark-mode', theme === 'dark');
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+
+function toggleTheme() {
+  const next = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+  try { localStorage.setItem(THEME_KEY, next); } catch {}
+  applyTheme(next);
+}
+
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem(THEME_KEY); } catch {}
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+})();
+
+
 // ═══════════════════════════════════════════════════════
 //  DATA MODELS
 // ═══════════════════════════════════════════════════════
@@ -500,16 +567,15 @@ for (let s = 1; s <= 5; s++) {
 const MODELS = {
 
   "Survey Unit": [
-    { name: "Author",                       type: "dropdown", options: AUTHORS },
     { name: "Date (creation of the entry)", type: "datetime" },
-    { name: "Date of survey",               type: "datetime-multi",
-      hint: "Add one date per survey season carried out on this unit." },
-    // Only the 000 is editable — prefix is locked.
     { name: "Entry ID",                     type: "id", prefix: "KARP-S26-CMG-SU" },
+    { name: "Author",                       type: "dropdown", options: AUTHORS },
+    { name: "Date of survey",               type: "datetime-multi",
+      hint: "Add one date per survey carried out on this unit." },
     { name: "Administrative unit",          type: "dropdown",
       options: ["to be defined"] },
     { name: "Dimensions",                   type: "text", placeholder: "Length × width" },
-    { name: "Coordinates (x / y / z)",      type: "gps" },
+    { name: "Coordinates (x / y / z)",      type: "gps", hint: ["The coordinates from GPS can also be added manually."] },
     { name: "Type of Survey Unit",          type: "dropdown",
       options: ["Modern field", "Hillslope", "Forest"] },
     { name: "Type of landscape",            type: "dropdown",
@@ -520,6 +586,8 @@ const MODELS = {
       options: ["Cultivated", "Untouched", "Plowed"] },
     { name: "Vegetation",                   type: "text" },
     { name: "Visibility (%)",               type: "percent",
+      hint: "Grid to refine on site — e.g. 100 = freshly laboured · 80 = wheat recently cut · 30–40 = forest." },
+      { name: "Accessibility (%)",               type: "percent",
       hint: "Grid to refine on site — e.g. 100 = freshly laboured · 80 = wheat recently cut · 30–40 = forest." },
     { name: "Survey methodology",           type: "dropdown",
       options: ["Intensive", "Extensive"] },
@@ -535,10 +603,9 @@ const MODELS = {
   ],
 
   "Transect": [
-    { name: "Author / Fieldwalker",   type: "dropdown", options: AUTHORS },
     { name: "Date",                   type: "datetime" },
-    // Entry ID typed by hand: fixed stem, you edit the SU number and the TR number.
     { name: "Entry ID",               type: "id-dual", stem: "KARP-S26-CMG-SU", mid: "-TR" },
+    { name: "Author / Fieldwalker",   type: "dropdown", options: AUTHORS },
     { name: "Survey unit",            type: "text", placeholder: "Parent survey unit ID" },
     { name: "Dimensions",             type: "text", placeholder: "Length (width assumed 1 m)" },
     { name: "Coordinates (start / end)", type: "gps2" },
@@ -634,46 +701,32 @@ const MODELS = {
   ],
 
   "Landscape Character Area Base Profile": [
-    { name: "Author / Fieldwalker",   type: "dropdown", options: AUTHORS },
     { name: "Date (First Creation of the Entry)",                   type: "datetime" },
-    // Entry ID typed by hand: fixed stem, you edit the SU number and the TR number.
-    { name: "Entry ID",               type: "id-dual", stem: "KARP-S26-CMG-LU"},
-    { name: "Related Administrative Unit",            type: "text", placeholder: "Parent AU ID" },
-    { name: "Related Survey Unit",            type: "text", placeholder: "Parent SU ID" },
-    { name: "Area Definition",             type: "text", placeholder: "--" },
-    { name: "Coordinates (start / end)", type: "gps2" },
+    { name: "Author / Fieldwalker",   type: "dropdown", options: AUTHORS },
+    { name: "Coordinates of the viewpoint", type: "gps" },
     { name: "Place — Natural", type: "header" },
-    { name: "Geology",            type: "dropdown", options: ["Limestone", "Basalt", "Alluvium", "Sandstone", "Tuff", "Metamorphic", "Other"]},
     { name: "Landform",             type: "dropdown", options: ["Valley bottom", "Plain", "Plateau", "Ridge", "Hillslope", "Gorge", "Terrace", "Depression"]},
-    { name: "Air & Climate",             type: "dropdown", options: ["Arid", "Semi-arid", "Mediterranean", "Continental", "Humid", "Exposed/Windy", "Sheltered"]},
     { name: "Type of soil",             type: "dropdown", options: ["Clay", "Silt", "Sand", "Loam", "Stony/Rocky", "Ploughed Topsoil", "Highly Eroded"]},
     { name: "Flora & Fauna",             type: "text"},
     { name: "Comments (Place — Natural)",             type: "text"},
     { name: "Place — Cultural / Social", type: "header" },
     { name: "Land Use",            type: "dropdown", options: ["Arable Farming", "Pasture/Grazing", "Orchards/Vineyards", "Forestry", "Wasteland", "Urban/Built-up"]},
-    { name: "Settlement",             type: "dropdown", options: ["Nucleated", "Dispersed/Hamlets", "Urban Fringe", "Archaeological Feature", "Abandoned", "None"]},
-    { name: "Enclosure",             type: "dropdown", options: ["Stone Walls", "Hedgerows", "Fences", "Ditches", "Agricultural Terracing", "Open/None"]},
     { name: "Comments (Place — Cultural / Social)",             type: "text"},
-    { name: "People — Aesthetic (Sight & Senses)", type: "header" },
-    { name: "Colour",            type: "dropdown", options: ["Monochromatic Earthy", "Vibrant/Multi", "Muted Greens", "Straw/Ochre", "Dark/Shadowed"]},
-    { name: "Texture",             type: "dropdown", options: ["Coarse/Rough", "Smooth/Uniform", "Fine/Granular", "Varied"]},
-    { name: "Pattern",             type: "dropdown", options: ["Regular/Geometric", "Irregular/Organic", "Linear", "Patchwork", "Chaotic/Fragmentation"]},
-    { name: "Form",            type: "dropdown", options: ["Flat", "Rolling", "Sloping", "Steep/Vertical", "Rugged/Jagged", "Complex"]},
-    { name: "Sounds",             type: "dropdown", options: ["Silent", "Natural (Wind/Water/Fauna)", "Anthropic (Traffic/Machinery)", "Distant Murmur"]},
-    { name: "Smells",             type: "dropdown", options: ["Natural/Vegetation", "Earthy/Damp", "Smoke/Burning", "Agricultural/Manure", "None"]},
-    { name: "Touch / Feel",            type: "dropdown", options: ["Exposed/Chilly", "Sheltered/Warm", "Humid/Sticky", "Dry/Dusty", "High Wind"]},
-    { name: "Comments (Aesthetic Sight)",             type: "text"},
-    { name: "People — Perceptual", type: "header" },
-    { name: "Memories",            type: "dropdown", options: ["Historic/Ancient Resonance", "Living Local Memory", "Abandoned/Ruined Feel", "Modern intervention"]},
-    { name: "Associations",             type: "dropdown", options: ["Sacred/Ritual", "Conflict/Battleground", "Historical Trade/Travel Route", "Agricultural Heritage", "None"]},
-    { name: "Preferences",             type: "dropdown", options: ["High Scenic Value", "Picturesque", "Industrialized/Degraded", "Ordinary/Commonplace"]},
-    { name: "Comments (Perceptual)",             type: "text"},
 
+    { name: "Sensory / Perception", type: "header" },
+    { name: "Which colour(s) is prominent in this landscape?",            type: "text"},
+        { name: "Do you observe any variations in textures around you?",             type: "text"},
+        { name: "Do you recognize any patterns?",             type: "text"},
+        { name: "Which forms or shapes draw your attention?",            type: "text"},
+        { name: "Are there any sounds that are specific to this place?",             type: "text"},
+        { name: "Do you notice any smells?",             type: "text"},
+        { name: "How does this area feel? Can you describe a sense of touch?",            type: "text"},
+        { name: "Comments (Aesthetic Sight)",             type: "text"},
+         { name: "Photographs",  type: "photo" },
 
-    
-    { name: "Photographs",  type: "photo" },
-  ],
-};
+      ]
+    };    
+  
 
 
 // ═══════════════════════════════════════════════════════
